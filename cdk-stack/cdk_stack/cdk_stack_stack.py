@@ -11,5 +11,5 @@ class CdkStackStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # Example bucket to confirm successful deployment
-        bucket = s3.Bucket(self, "MyBucket",
-            removal_policy=RemovalPolicy.DESTROY)
+        # bucket = s3.Bucket(self, "MyBucket",
+        #     removal_policy=RemovalPolicy.DESTROY)
