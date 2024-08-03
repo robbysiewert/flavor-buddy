@@ -2,6 +2,8 @@ from aws_cdk import (
     # Duration,
     Stack,
     # aws_sqs as sqs,
+    aws_s3 as s3,
+    RemovalPolicy
 )
 from constructs import Construct
 
@@ -17,3 +19,6 @@ class CdkStackStack(Stack):
         #     self, "CdkStackQueue",
         #     visibility_timeout=Duration.seconds(300),
         # )
+
+        bucket = s3.Bucket(self, "MyBucket",
+            removal_policy=RemovalPolicy.DESTROY)
