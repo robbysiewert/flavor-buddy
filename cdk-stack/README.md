@@ -58,11 +58,13 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
-To add libraries or modules for the Lambda functions, add the package and version to lambda_dependencies.txt and run the following command. Zip the python directory, rename it lambda_layer, and place the zip file in the folder cdk_stack.
+To add libraries or modules for the Lambda functions, add the package and version to lambda_dependencies.txt and run the following command. Zip the python directory, rename it lambda_layer, and place the zip file .
 
 ```
 $ pip install -r lambda-dependencies.txt -t lambda_layer/python
 ```
+
+Zip the "python" folder and place in the folder cdk-stack, name the zip file lambda_layer.zip
 
 At this point you can now synthesize the CloudFormation template for this code.
 
