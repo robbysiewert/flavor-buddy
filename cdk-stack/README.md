@@ -1,14 +1,18 @@
+# Technical Setup Instructions
 
 The following contains technical information regarding replicating the AWS CDK repository (interacts with the React app but does not contain setup instructions regarding the frontend)  on your system. Some of this information is courtesy of AWS and not written by the owner of the project.
 
-
+```
 $ aws configure
+```
 
 Enter your access ID, secret, region
 
+```
 $ mkdir [directory-name]
 $ cd [directory-name]
 $ cdk init app --language python
+```
 
 # Welcome to your CDK Python project!
 
@@ -52,6 +56,12 @@ Once the virtualenv is activated, you can install the required dependencies.
 
 ```
 $ pip install -r requirements.txt
+```
+
+To add libraries or modules for the Lambda functions, add the package and version to lambda_dependencies.txt and run the following command. Zip the python directory, rename it lambda_layer, and place the zip file in the folder cdk_stack.
+
+```
+$ pip install -r lambda-dependencies.txt -t lambda_layer/python
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.
