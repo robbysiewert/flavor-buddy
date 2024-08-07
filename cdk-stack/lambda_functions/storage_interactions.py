@@ -13,16 +13,17 @@ def handler(event, context):
     '''
     httpMethod = event['httpMethod']
     print(f"htttpMethod: {httpMethod}")
-    
-    body = json.loads(event['body'])
-    print("Event Body")
-    print(body)
-    print(type(body))
 
     if httpMethod == 'POST':
+        body = json.loads(event['body'])
+        print("Event Body")
+        print(body)
+        print(type(body))
         return POST(body)
     elif httpMethod == 'GET':
-        return GET()
+        queryStringParameters = event['queryStringParameters']
+        print(queryStringParameters)
+        return GET(queryStringParameters)
     elif httpMethod == 'PUT':
         return PUT(event.get('key'), event.get('update_expression'), event.get('expression_attribute_values'))
     elif httpMethod == 'DELETE':
@@ -55,13 +56,15 @@ def POST(body):
             'body': json.dumps(f"Error creating item: {e.response['Error']['Message']}")
         }
 
-def GET():
+def GET(queryStringParameters):
     try:
+        identifier = queryStringParameters['identifier']
+        print(identifier)
 
         # Retrieve an item from the table
         response = table.get_item(
             Key={
-                'identifier': 'test_identifier',  # Replace 'test_identifier' with your actual identifier value
+                'identifier': identifier,  # Replace 'test_identifier' with your actual identifier value
             }
         )
         if 'Item' in response:
