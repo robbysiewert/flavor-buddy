@@ -1,4 +1,15 @@
 
+The following contains technical information regarding replicating the AWS CDK repository (interacts with the React app but does not contain setup instructions regarding the frontend)  on your system. Some of this information is courtesy of AWS and not written by the owner of the project.
+
+
+$ aws configure
+
+Enter your access ID, secret, region
+
+$ mkdir [directory-name]
+$ cd [directory-name]
+$ cdk init app --language python
+
 # Welcome to your CDK Python project!
 
 This is a blank project for CDK development with Python.
@@ -29,6 +40,12 @@ If you are a Windows platform, you would activate the virtualenv like this:
 
 ```
 % .venv\Scripts\activate.bat
+```
+
+or
+
+```
+% .venv\Scripts\activate
 ```
 
 Once the virtualenv is activated, you can install the required dependencies.
