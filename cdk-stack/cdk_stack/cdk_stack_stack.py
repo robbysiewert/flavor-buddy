@@ -73,7 +73,7 @@ class CdkStackStack(Stack):
 
         # Lambda function to interact with DynamoDB
         storage_function = _lambda.Function(
-            self, 'MyFunction',
+            self, 'StorageFunction',
             runtime=_lambda.Runtime.PYTHON_3_12,
             handler='storage_interactions.handler',
             code=_lambda.Code.from_asset('lambda_functions'),
@@ -81,12 +81,25 @@ class CdkStackStack(Stack):
             role=storage_function_role
         )
 
+        # # Create the API Gateway REST API
+        # api = apigateway.RestApi(
+        #     self, 'ApiGateway',
+        #     rest_api_name='APIGatewayREST',
+        #     description='API for backend operations',
+        #     deploy=True
+        # )
+
         # Create an API Gateway REST API resource for the Lambda function
         api = apigateway.LambdaRestApi(
             self, 'MyApiGateway',
             handler=storage_function,
             proxy=False
         )
+
+        # # Define the API resources and methods
+        # storage_resource = api.root.add_resource('storage')
+        # storage_resource.add_method('GET', apigateway.LambdaIntegration(storage_function))
+        # storage_resource.add_method('POST', apigateway.LambdaIntegration(storage_function))
 
         # Define a resource and method for the API
         items = api.root.add_resource("storage") # /storage
