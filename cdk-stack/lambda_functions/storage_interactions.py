@@ -2,24 +2,30 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-# Initialize a DynamoDB session  
+# Initialize a DynamoDB session
 dynamodb = boto3.resource('dynamodb')
 # Create table object
-table = dynamodb.Table('YourTableName')
+table = dynamodb.Table('Metadata')
 
 def handler(event, context):
     '''
     Handle interactions with the Database
     '''
-    operation = event.get('operation')
+    httpMethod = event['httpMethod']
+    print(f"htttpMethod: {httpMethod}")
     
-    if operation == 'POST':
-        return POST(event.get('item'))
-    elif operation == 'GET':
+    body = json.loads(event['body'])
+    print("Event Body")
+    print(body)
+    print(type(body))
+
+    if httpMethod == 'POST':
+        return POST(body)
+    elif httpMethod == 'GET':
         return GET()
-    elif operation == 'PUT':
+    elif httpMethod == 'PUT':
         return PUT(event.get('key'), event.get('update_expression'), event.get('expression_attribute_values'))
-    elif operation == 'DELETE':
+    elif httpMethod == 'DELETE':
         return DELETE(event.get('key'))
     else:
         return {
@@ -27,9 +33,18 @@ def handler(event, context):
             'body': json.dumps('Invalid operation')
         }
 
-def POST(item):
+def POST(body):
+    identifier_value = body['identifier']
+    print(identifier_value)
     try:
-        response = table.put_item(Item=item)
+        # Add an item to the table
+        response = table.put_item(
+            Item={
+                'identifier': identifier_value,  # Replace 'test_identifier' with your actual identifier value
+                'Attribute1': 'Value1',            # Replace with your actual attribute names and values
+                'Attribute2': 'Value2',
+            }
+        )
         return {
             'statusCode': 200,
             'body': json.dumps('Item created successfully')
@@ -42,9 +57,11 @@ def POST(item):
 
 def GET():
     try:
+
+        # Retrieve an item from the table
         response = table.get_item(
             Key={
-                'identifer': 'Test'
+                'identifier': 'test_identifier',  # Replace 'test_identifier' with your actual identifier value
             }
         )
         if 'Item' in response:
