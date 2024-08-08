@@ -1,5 +1,9 @@
 # The following contains setup instructions for the frontend react app
 
+Install create-react-app
+```
+$ npm install -g create-react-app
+```
 Ensure node and npm are installed
 ```
 $ node -v
@@ -8,6 +12,10 @@ $ npm -v
 Create a react app in the root directory
 ```
 $ npx create-react-app aws-site-frontend
+```
+Install axios
+```
+$ npm install axios
 ```
 Get started locally
 ```
