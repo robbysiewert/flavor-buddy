@@ -14,6 +14,10 @@ $ cd [directory-name]
 $ cdk init app --language python
 ```
 
+```
+$ pip install aws-cdk-lib
+```
+
 # Welcome to your CDK Python project!
 
 This is a blank project for CDK development with Python.

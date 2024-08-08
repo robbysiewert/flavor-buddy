@@ -1,6 +1,6 @@
+"""Module providing resources for defining AWS infrastructure to deploy as code"""
 from aws_cdk import (
     Stack,
-    aws_s3 as s3,
     aws_lambda as _lambda,
     aws_dynamodb as dynamodb,
     aws_apigateway as apigateway,
@@ -10,14 +10,22 @@ from aws_cdk import (
 from constructs import Construct
 
 class CdkStackStack(Stack):
+    """
+    This AWS CDK stack defines the infrastructure resources required for a serverless application.
+
+    The resources created include:
+    - A DynamoDB table named 'Metadata' for storing application metadata
+    - A Lambda layer containing dependencies for the Lambda function
+    - An IAM role and policy for the Lambda function to access DynamoDB
+    - A Lambda function named 'StorageFunction' to interact with the DynamoDB table
+    - An API Gateway REST API with resources and methods to invoke the Lambda function
+
+    The stack is configured to remove all resources when deleted (for testing purposes).
+    This removal policy should be removed for production deployments.
+    """
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        # Example bucket to confirm successful deployment
-        # bucket = s3.Bucket(self, "MyBucket",
-        #     removal_policy=RemovalPolicy.DESTROY) # For testing purposes, remove for production
-
 
         # Create a table for metadata storage
         metadata = dynamodb.Table(
@@ -81,25 +89,12 @@ class CdkStackStack(Stack):
             role=storage_function_role
         )
 
-        # # Create the API Gateway REST API
-        # api = apigateway.RestApi(
-        #     self, 'ApiGateway',
-        #     rest_api_name='APIGatewayREST',
-        #     description='API for backend operations',
-        #     deploy=True
-        # )
-
         # Create an API Gateway REST API resource for the Lambda function
         api = apigateway.LambdaRestApi(
             self, 'MyApiGateway',
             handler=storage_function,
             proxy=False
         )
-
-        # # Define the API resources and methods
-        # storage_resource = api.root.add_resource('storage')
-        # storage_resource.add_method('GET', apigateway.LambdaIntegration(storage_function))
-        # storage_resource.add_method('POST', apigateway.LambdaIntegration(storage_function))
 
         # Define a resource and method for the API
         items = api.root.add_resource("storage") # /storage
