@@ -101,22 +101,22 @@ class CdkStackStack(Stack):
         items.add_method("GET")
         items.add_method("PUT")
         items.add_method("DELETE")
-        items.add_method("POST")
-        # items.add_method(
-        #     "POST",
-        #     integration=apigateway.LambdaIntegration(storage_function),
-        #     method_responses=[
-        #         {
-        #             "statusCode": "200",
-        #             "responseParameters": {
-        #                 "method.response.header.Access-Control-Allow-Origin": True,
-        #             },
-        #         }
-        #     ],
-        # )
-        # # Add CORS preflight OPTIONS method
-        # items.add_cors_preflight(
-        #     allow_origins=["http://localhost:3000"],  # Allow requests from your React app
-        #     allow_methods=["POST", "OPTIONS"],        # Allow POST and OPTIONS methods
-        #     allow_headers=["Content-Type"],           # Allow necessary headers
-        # )
+        # items.add_method("POST")
+        items.add_method(
+            "POST",
+            integration=apigateway.LambdaIntegration(storage_function),
+            method_responses=[
+                {
+                    "statusCode": "200",
+                    "responseParameters": {
+                        "method.response.header.Access-Control-Allow-Origin": True,
+                    },
+                }
+            ],
+        )
+        # Add CORS preflight OPTIONS method
+        items.add_cors_preflight(
+            allow_origins=["http://localhost:3000"],  # Allow requests from your React app
+            allow_methods=["POST", "OPTIONS"],        # Allow POST and OPTIONS methods
+            allow_headers=["Content-Type"],           # Allow necessary headers
+        )
