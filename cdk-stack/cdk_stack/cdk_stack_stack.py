@@ -5,7 +5,13 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_apigateway as apigateway,
     aws_iam as iam,
-    RemovalPolicy
+    aws_s3 as s3,
+    aws_cloudfront as cloudfront,
+    aws_cloudfront_origins as origins,
+    aws_s3_deployment as s3_deployment,
+    RemovalPolicy,
+    Duration,
+    CfnOutput
 )
 from constructs import Construct
 
@@ -97,12 +103,12 @@ class CdkStackStack(Stack):
         )
 
         # Define a resource and method for the API
-        items = api.root.add_resource("storage") # /storage
-        items.add_method("GET")
-        items.add_method("PUT")
-        items.add_method("DELETE")
-        # items.add_method("POST")
-        items.add_method(
+        storage_resource = api.root.add_resource("storage") # /storage
+        storage_resource.add_method("GET")
+        storage_resource.add_method("PUT")
+        storage_resource.add_method("DELETE")
+        # storage_resource.add_method("POST")
+        storage_resource.add_method(
             "POST",
             integration=apigateway.LambdaIntegration(storage_function),
             method_responses=[
@@ -115,8 +121,72 @@ class CdkStackStack(Stack):
             ],
         )
         # Add CORS preflight OPTIONS method
-        items.add_cors_preflight(
+        storage_resource.add_cors_preflight(
             allow_origins=["http://localhost:3000"],  # Allow requests from your React app
             allow_methods=["POST", "OPTIONS"],        # Allow POST and OPTIONS methods
             allow_headers=["Content-Type"],           # Allow necessary headers
         )
+
+       # S3 bucket to host React app
+        site_bucket = s3.Bucket(self, "ReactAppBucket",
+            website_index_document="index.html",
+            # public_read_access=True,
+            removal_policy=RemovalPolicy.DESTROY,
+            auto_delete_objects=True
+        )
+
+        # Create the CloudFront distribution
+        distribution = cloudfront.Distribution(self, "ReactAppDistribution",
+            default_behavior={
+                "origin": origins.S3Origin(site_bucket),
+                "viewer_protocol_policy": cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+            },
+            error_responses=[
+                cloudfront.ErrorResponse(
+                    http_status=404,
+                    response_http_status=200,
+                    response_page_path="/index.html",
+                    ttl=Duration.minutes(30)
+                )
+            ]
+        )
+
+        # Deploy the React app to the S3 bucket
+        deployment = s3_deployment.BucketDeployment(self, "DeployReactApp",
+            sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
+            destination_bucket=site_bucket,
+            distribution=distribution,
+            distribution_paths=["/*"]
+        )
+
+
+        # Output the URLs
+        CfnOutput(self, "S3BucketURL", value=site_bucket.bucket_website_url)
+        CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
+
+        # gateway_response_2xx = apigateway.GatewayResponse(
+        #     self, "GatewayResponse200",
+        #     rest_api=api,
+        #     response_type=apigateway.ResponseType.DEFAULT_2_XX,
+        #     response_headers={
+        #         "Access-Control-Allow-Origin": "'http://localhost:3000'"
+        #     }
+        # )
+
+        # gateway_response_4xx = apigateway.GatewayResponse(
+        #     self, "GatewayResponse4XX",
+        #     rest_api=api,
+        #     response_type=apigateway.ResponseType.DEFAULT_4_XX,
+        #     response_headers={
+        #         "Access-Control-Allow-Origin": "'http://localhost:3000'"
+        #     }
+        # )
+
+        # gateway_response_5xx = apigateway.GatewayResponse(
+        #     self, "GatewayResponse5XX",
+        #     rest_api=api,
+        #     response_type=apigateway.ResponseType.DEFAULT_5_XX,
+        #     response_headers={
+        #         "Access-Control-Allow-Origin": "'http://localhost:3000'"
+        #     }
+        # )
