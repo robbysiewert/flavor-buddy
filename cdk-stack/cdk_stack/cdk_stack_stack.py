@@ -113,30 +113,10 @@ class CdkStackStack(Stack):
         storage_resource.add_method("PUT")
         storage_resource.add_method("DELETE")
         storage_resource.add_method("POST")
-        # storage_resource.add_method(
-        #     "POST",
-        #     integration=apigateway.LambdaIntegration(storage_function),
-        #     method_responses=[
-        #         {
-        #             "statusCode": "200",
-        #             "responseParameters": {
-        #                 "method.response.header.Access-Control-Allow-Origin": True,
-        #             },
-        #         }
-        #     ],
-        # )
 
-        # # Add CORS preflight OPTIONS method
-        # storage_resource.add_cors_preflight(
-        #     allow_origins=["http://localhost:3000"],  # Allow requests from your React app
-        #     allow_methods=["POST", "OPTIONS"],        # Allow POST and OPTIONS methods
-        #     allow_headers=["Content-Type"],           # Allow necessary headers
-        # )
-
-       # S3 bucket to host React app
+        # Create the S3 bucket
         site_bucket = s3.Bucket(self, "ReactAppBucket",
             website_index_document="index.html",
-            # public_read_access=True,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True
         )
@@ -144,22 +124,10 @@ class CdkStackStack(Stack):
         # Create an Origin Access Identity for CloudFront
         oai = cloudfront.OriginAccessIdentity(self, "OriginAccessIdentity")
 
-        # Allow CloudFront (with the OAI) to access the S3 bucket
-        bucket_policy = iam.PolicyStatement(
-            actions=["s3:GetObject"],
-            resources=[f"{site_bucket.bucket_arn}/*"],
-            effect=iam.Effect.ALLOW,
-            principals=[
-                iam.ServicePrincipal("cloudfront.amazonaws.com"),
-                iam.ArnPrincipal(oai.cloud_front_origin_access_identity_s3_canonical_user_id)
-            ]
-        )
-
-        site_bucket.add_to_resource_policy(bucket_policy)
         # Create the CloudFront distribution
         distribution = cloudfront.Distribution(self, "ReactAppDistribution",
             default_behavior={
-                "origin": origins.S3Origin(site_bucket),
+                "origin": origins.S3Origin(site_bucket, origin_access_identity=oai),
                 "viewer_protocol_policy": cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
             },
             error_responses=[
@@ -172,6 +140,15 @@ class CdkStackStack(Stack):
             ]
         )
 
+        # Allow CloudFront (with the OAI) to access the S3 bucket
+        bucket_policy = iam.PolicyStatement(
+            actions=["s3:GetObject"],
+            resources=[f"{site_bucket.bucket_arn}/*"],
+            effect=iam.Effect.ALLOW,
+            principals=[iam.ArnPrincipal(f"arn:aws:iam::cloudfront.amazonaws.com::{oai.origin_access_identity_id}")]
+        )
+        site_bucket.add_to_resource_policy(bucket_policy)
+
         # Deploy the React app to the S3 bucket
         deployment = s3_deployment.BucketDeployment(self, "DeployReactApp",
             sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
@@ -181,5 +158,8 @@ class CdkStackStack(Stack):
         )
 
         # Output the URLs
+        CfnOutput(self, "BucketName", value=site_bucket.bucket_name)
+        CfnOutput(self, "DistributionId", value=distribution.distribution_id)
+        CfnOutput(self, "OAIId", value=oai.origin_access_identity_id)
         CfnOutput(self, "S3BucketURL", value=site_bucket.bucket_website_url)
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
