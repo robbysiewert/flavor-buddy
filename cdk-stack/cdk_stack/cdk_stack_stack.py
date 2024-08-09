@@ -141,6 +141,21 @@ class CdkStackStack(Stack):
             auto_delete_objects=True
         )
 
+        # Create an Origin Access Identity for CloudFront
+        oai = cloudfront.OriginAccessIdentity(self, "OriginAccessIdentity")
+
+        # Allow CloudFront (with the OAI) to access the S3 bucket
+        bucket_policy = iam.PolicyStatement(
+            actions=["s3:GetObject"],
+            resources=[f"{site_bucket.bucket_arn}/*"],
+            effect=iam.Effect.ALLOW,
+            principals=[
+                iam.ServicePrincipal("cloudfront.amazonaws.com"),
+                iam.ArnPrincipal(oai.cloud_front_origin_access_identity_s3_canonical_user_id)
+            ]
+        )
+
+        site_bucket.add_to_resource_policy(bucket_policy)
         # Create the CloudFront distribution
         distribution = cloudfront.Distribution(self, "ReactAppDistribution",
             default_behavior={
