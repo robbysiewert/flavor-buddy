@@ -62,20 +62,27 @@ def post(body):
     """
 
     identifier_value = body['identifier']
+    attribute1_value = body['attribute1']
     print(identifier_value)
     try:
         # Add an item to the table
-        response = table.put_item(
+        dynamodb_response = table.put_item(
             Item={
                 'identifier': identifier_value,
-                'Attribute1': 'Value1',
-                'Attribute2': 'Value2',
+                'Attribute1': attribute1_value,
             }
         )
-        return {
+
+        response = {
             'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
             'body': json.dumps('Item created successfully')
         }
+        return response
     except ClientError as e:
         return {
             'statusCode': 500,

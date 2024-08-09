@@ -95,11 +95,16 @@ class CdkStackStack(Stack):
             role=storage_function_role
         )
 
-        # Create an API Gateway REST API resource for the Lambda function
+        # Create the API Gateway with CORS enabled
         api = apigateway.LambdaRestApi(
             self, 'MyApiGateway',
             handler=storage_function,
-            proxy=False
+            proxy=False,
+            default_cors_preflight_options={
+                "allow_origins": apigateway.Cors.ALL_ORIGINS,
+                "allow_methods": apigateway.Cors.ALL_METHODS,
+                "allow_headers": apigateway.Cors.DEFAULT_HEADERS
+            }
         )
 
         # Define a resource and method for the API
@@ -107,25 +112,26 @@ class CdkStackStack(Stack):
         storage_resource.add_method("GET")
         storage_resource.add_method("PUT")
         storage_resource.add_method("DELETE")
-        # storage_resource.add_method("POST")
-        storage_resource.add_method(
-            "POST",
-            integration=apigateway.LambdaIntegration(storage_function),
-            method_responses=[
-                {
-                    "statusCode": "200",
-                    "responseParameters": {
-                        "method.response.header.Access-Control-Allow-Origin": True,
-                    },
-                }
-            ],
-        )
-        # Add CORS preflight OPTIONS method
-        storage_resource.add_cors_preflight(
-            allow_origins=["http://localhost:3000"],  # Allow requests from your React app
-            allow_methods=["POST", "OPTIONS"],        # Allow POST and OPTIONS methods
-            allow_headers=["Content-Type"],           # Allow necessary headers
-        )
+        storage_resource.add_method("POST")
+        # storage_resource.add_method(
+        #     "POST",
+        #     integration=apigateway.LambdaIntegration(storage_function),
+        #     method_responses=[
+        #         {
+        #             "statusCode": "200",
+        #             "responseParameters": {
+        #                 "method.response.header.Access-Control-Allow-Origin": True,
+        #             },
+        #         }
+        #     ],
+        # )
+
+        # # Add CORS preflight OPTIONS method
+        # storage_resource.add_cors_preflight(
+        #     allow_origins=["http://localhost:3000"],  # Allow requests from your React app
+        #     allow_methods=["POST", "OPTIONS"],        # Allow POST and OPTIONS methods
+        #     allow_headers=["Content-Type"],           # Allow necessary headers
+        # )
 
        # S3 bucket to host React app
         site_bucket = s3.Bucket(self, "ReactAppBucket",
@@ -159,34 +165,6 @@ class CdkStackStack(Stack):
             distribution_paths=["/*"]
         )
 
-
         # Output the URLs
         CfnOutput(self, "S3BucketURL", value=site_bucket.bucket_website_url)
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
-
-        # gateway_response_2xx = apigateway.GatewayResponse(
-        #     self, "GatewayResponse200",
-        #     rest_api=api,
-        #     response_type=apigateway.ResponseType.DEFAULT_2_XX,
-        #     response_headers={
-        #         "Access-Control-Allow-Origin": "'http://localhost:3000'"
-        #     }
-        # )
-
-        # gateway_response_4xx = apigateway.GatewayResponse(
-        #     self, "GatewayResponse4XX",
-        #     rest_api=api,
-        #     response_type=apigateway.ResponseType.DEFAULT_4_XX,
-        #     response_headers={
-        #         "Access-Control-Allow-Origin": "'http://localhost:3000'"
-        #     }
-        # )
-
-        # gateway_response_5xx = apigateway.GatewayResponse(
-        #     self, "GatewayResponse5XX",
-        #     rest_api=api,
-        #     response_type=apigateway.ResponseType.DEFAULT_5_XX,
-        #     response_headers={
-        #         "Access-Control-Allow-Origin": "'http://localhost:3000'"
-        #     }
-        # )

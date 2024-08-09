@@ -24,10 +24,10 @@ export default class Form extends Component {
     event.preventDefault();
     const { name, message } = this.state;
     await axios.post(
-      'https://evdgp5aemj.execute-api.us-west-2.amazonaws.com/prod/storage',
+      'https://d5txt85scc.execute-api.us-west-2.amazonaws.com/prod/storage',
       {
         identifier: name,
-        Attribute1: message,
+        attribute1: message,
       }
     );
   }
