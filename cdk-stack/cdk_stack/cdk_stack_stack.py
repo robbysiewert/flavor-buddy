@@ -13,6 +13,7 @@ from aws_cdk import (
     CfnOutput
 )
 from constructs import Construct
+import subprocess
 
 class CdkStackStack(Stack):
     """
@@ -113,19 +114,12 @@ class CdkStackStack(Stack):
         storage_resource.add_method("DELETE")
         storage_resource.add_method("POST")
 
-        # Note to delete the s3 bucket called bucket
-
         # S3 bucket to store the React App
         frontend_bucket = s3.Bucket(self, "ReactApplicationBucket",
             access_control=s3.BucketAccessControl.PRIVATE,
             removal_policy=RemovalPolicy.DESTROY, # for testing purposes, remove for production
             auto_delete_objects=True # for testing purposes, remove for production
         )
-
-        # # Upload the React app to the S3 bucket - tested and works
-        # s3_deployment.BucketDeployment(self, "BucketDeployment",
-        #     destination_bucket=frontend_bucket,
-        #     sources=[s3_deployment.Source.asset("../aws-site-frontend/build")])
 
         # Create an Origin Access Identity
         origin_access_identity = cloudfront.OriginAccessIdentity(self, "OriginAccessIdentity")
@@ -140,7 +134,7 @@ class CdkStackStack(Stack):
                 "origin": origins.S3Origin(frontend_bucket, origin_access_identity=origin_access_identity),
             })
 
-        # Upload the React app to the S3 bucket
+        # Upload the React app to the S3 bucket and invalidate the Cloudfront cache
         s3_deployment.BucketDeployment(self, "BucketDeployment",
             destination_bucket=frontend_bucket,
             sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
@@ -150,3 +144,20 @@ class CdkStackStack(Stack):
 
         # Output the URLs
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
+        CfnOutput(self, "ApiUrl", value=api.url)
+
+        stack_name = "CdkStackStack"
+        result = subprocess.run(
+            ["aws", "cloudformation", "describe-stacks", 
+            "--stack-name", stack_name, 
+            "--query", "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue", 
+            "--output", "text"],
+            capture_output=True,
+            text=True
+        )
+        api_gateway_url = result.stdout.strip()
+
+        # Write the API Gateway URL to a .env file
+        with open("../aws-site-frontend/.env", "w") as env_file:
+            env_file.write(f"REACT_APP_API_GATEWAY_URL={api_gateway_url}\n")
+
