@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 // Define the API Gateway URL as a constant
-const API_URL = 'https://d5txt85scc.execute-api.us-west-2.amazonaws.com/prod/storage';
+const API_URL = 'https://ezq6chqdjd.execute-api.us-west-2.amazonaws.com/prod/storage';
 
 export default class Form extends Component {
   constructor(props) {
@@ -50,11 +50,11 @@ export default class Form extends Component {
       );
 
       // Extract values from the response object
-      const { identifier, attribute1 } = response.data;
+      const { identifier, Attribute1 } = response.data;
       this.setState({
         response: {
           identifierMessage: `Your identifier is ${identifier}`,
-          attributeMessage: `Your value is ${attribute1}`,
+          attributeMessage: `Your value is ${Attribute1}`,
         },
       });
     } catch (error) {
