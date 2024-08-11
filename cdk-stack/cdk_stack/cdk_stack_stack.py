@@ -13,7 +13,6 @@ from aws_cdk import (
     CfnOutput
 )
 from constructs import Construct
-import subprocess
 
 class CdkStackStack(Stack):
     """
@@ -39,6 +38,28 @@ class CdkStackStack(Stack):
             table_name='Metadata',
             partition_key=dynamodb.Attribute(
                 name='identifier',
+                type=dynamodb.AttributeType.STRING
+            ),
+            removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
+        )
+
+        # Create a table Food data
+        food = dynamodb.Table(
+            self, 'Foods',
+            table_name='Foods',
+            partition_key=dynamodb.Attribute(
+                name='id',
+                type=dynamodb.AttributeType.STRING
+            ),
+            removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
+        )
+
+        # Create a table for user data
+        user = dynamodb.Table(
+            self, 'Users',
+            table_name='Users',
+            partition_key=dynamodb.Attribute(
+                name='id',
                 type=dynamodb.AttributeType.STRING
             ),
             removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
@@ -76,7 +97,9 @@ class CdkStackStack(Stack):
                         "dynamodb:Query"
                     ],
                     resources=[
-                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Metadata"
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Metadata",
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Foods",
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Users"
                     ]
                 )
             ]
@@ -141,22 +164,6 @@ class CdkStackStack(Stack):
             distribution=distribution,  # Link the distribution to the deployment
             distribution_paths=["/*"]   # Invalidate all files in the cache
         )
-
-        # Get API Gateway URL endpoint
-        stack_name = "CdkStackStack"
-        result = subprocess.run(
-            ["aws", "cloudformation", "describe-stacks",
-            "--stack-name", stack_name,
-            "--query", "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue",
-            "--output", "text"],
-            capture_output=True,
-            text=True
-        )
-        api_gateway_url = result.stdout.strip()
-
-        # Write the API Gateway URL to a .env file for the React app to read
-        with open("../aws-site-frontend/.env", "w") as env_file:
-            env_file.write(f"REACT_APP_API_GATEWAY_URL={api_gateway_url}\n")
 
         # Output the URLs
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)

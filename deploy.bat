@@ -13,6 +13,8 @@ cd ../cdk-stack
 cdk deploy
 echo "deploying"
 
+python propagate_api_url.py
+
 REM Deploying will write the API Gateway endpoint to a file for the React app
 
 REM Build the React app with the updated API Gateway endpoint

@@ -8,6 +8,7 @@ from botocore.exceptions import ClientError
 dynamodb = boto3.resource('dynamodb')
 # Create table object
 table = dynamodb.Table('Metadata')
+food_table = dynamodb.Table('Foods')
 
 def handler(event, context):
     '''
@@ -21,7 +22,6 @@ def handler(event, context):
         body = json.loads(event['body'])
         print("Event Body")
         print(body)
-        print(type(body))
         return post(body)
     elif http_method == 'GET':
         query_params = event['queryStringParameters']
@@ -34,7 +34,6 @@ def handler(event, context):
         body = json.loads(event['body'])
         print("Event Body")
         print(body)
-        print(type(body))
         return delete(body)
     else:
         return {
@@ -65,6 +64,11 @@ def post(body):
     attribute1_value = body['attribute1']
     print(identifier_value)
     try:
+        if identifier_value == 'add_food_data':
+            print('Calling add_food_data()')
+            add_food_data()
+        # else:
+        print(f'Proceeding with put on {identifier_value}')
         # Add an item to the table
         dynamodb_response = table.put_item(
             Item={
@@ -72,22 +76,11 @@ def post(body):
                 'Attribute1': attribute1_value,
             }
         )
-
-        response = {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
-            'body': json.dumps('Item created successfully')
-        }
-        return response
-    except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f"Error creating item: {e.response['Error']['Message']}")
-        }
+        print("DynamoDB table updated - returning success")
+        return format_successful_response()
+    except Exception as e:
+        print("DynamoDB table not updated - returning failure")
+        return format_unsuccessful_response(e)
 
 def get(query_params: dict):
     """
@@ -190,3 +183,34 @@ def PUT(key, update_expression, expression_attribute_values):
             'statusCode': 500,
             'body': json.dumps(f"Error updating item: {e.response['Error']['Message']}")
         }
+
+
+def add_food_data():
+
+    food_data = []
+    if food_data:
+        # Insert each food item into the 'Foods' table
+        for food in food_data:
+            food_table.put_item(Item=food)
+
+
+def format_successful_response():
+    response = {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        'body': json.dumps('Item created successfully')
+    }
+    return response
+
+def format_unsuccessful_response(exception):
+    print(exception)
+    response = {
+        'statusCode': 500,
+        'body': json.dumps(f"Error creating item: {exception.response['Error']['Message']}")
+    }
+    return response
+
