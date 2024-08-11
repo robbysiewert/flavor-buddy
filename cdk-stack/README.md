@@ -76,10 +76,23 @@ At this point you can now synthesize the CloudFormation template for this code.
 $ cdk synth
 ```
 
-Deploy by running the deploy script in the root directory of the project
+Build the React app and deploy the stack
 ```
-$ .\deploy.bat
+$ cd ..
+$ cd aws-site-frontend
+$ npm run build
+$ cd ..
+$ cd cdk-stack
+$ cdk deploy
 ```
+Note that deploying the stack writes the API Gateway URl to an environment variable used by the React app, so if this is the first deployment:
+
+Deploy again, this time the URL will be available (the resource is being provisioned when the write is attempted during the first deployment)
+```
+$ cdk deploy
+```
+Then repeat the build and deploy process as outlined above, this time the React app will be built and deployed with the API Gateway URL and the backend calls will be enabled
+
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
