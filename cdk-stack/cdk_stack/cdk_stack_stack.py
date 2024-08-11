@@ -122,10 +122,10 @@ class CdkStackStack(Stack):
             auto_delete_objects=True # for testing purposes, remove for production
         )
 
-        # Upload the React app to the S3 bucket
-        s3_deployment.BucketDeployment(self, "BucketDeployment",
-            destination_bucket=frontend_bucket,
-            sources=[s3_deployment.Source.asset("../aws-site-frontend/build")])
+        # # Upload the React app to the S3 bucket - tested and works
+        # s3_deployment.BucketDeployment(self, "BucketDeployment",
+        #     destination_bucket=frontend_bucket,
+        #     sources=[s3_deployment.Source.asset("../aws-site-frontend/build")])
 
         # Create an Origin Access Identity
         origin_access_identity = cloudfront.OriginAccessIdentity(self, "OriginAccessIdentity")
@@ -140,13 +140,13 @@ class CdkStackStack(Stack):
                 "origin": origins.S3Origin(frontend_bucket, origin_access_identity=origin_access_identity),
             })
 
-        # # Deploy the React app to the S3 bucket
-        # deployment = s3_deployment.BucketDeployment(self, "DeployReactApp",
-        #     sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
-        #     destination_bucket=site_bucket,
-        #     distribution=distribution,
-        #     distribution_paths=["/*"]
-        # )
+        # Upload the React app to the S3 bucket
+        s3_deployment.BucketDeployment(self, "BucketDeployment",
+            destination_bucket=frontend_bucket,
+            sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
+            distribution=distribution,  # Link the distribution to the deployment
+            distribution_paths=["/*"]   # Invalidate all files in the cache
+        )
 
         # Output the URLs
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)

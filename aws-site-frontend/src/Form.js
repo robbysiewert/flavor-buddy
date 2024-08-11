@@ -53,7 +53,7 @@ export default class Form extends Component {
       const { identifier, Attribute1 } = response.data;
       this.setState({
         response: {
-          identifierMessage: `Your identifier is ${identifier}`,
+          identifierMessage: `V0.01 Your identifier is ${identifier}`,
           attributeMessage: `Your value is ${Attribute1}`,
         },
       });
