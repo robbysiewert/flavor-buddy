@@ -10,7 +10,6 @@ from aws_cdk import (
     aws_cloudfront_origins as origins,
     aws_s3_deployment as s3_deployment,
     RemovalPolicy,
-    Duration,
     CfnOutput
 )
 from constructs import Construct
@@ -113,58 +112,41 @@ class CdkStackStack(Stack):
         storage_resource.add_method("PUT")
         storage_resource.add_method("DELETE")
         storage_resource.add_method("POST")
-        # storage_resource.add_method(
-        #     "POST",
-        #     integration=apigateway.LambdaIntegration(storage_function),
-        #     method_responses=[
-        #         {
-        #             "statusCode": "200",
-        #             "responseParameters": {
-        #                 "method.response.header.Access-Control-Allow-Origin": True,
-        #             },
-        #         }
-        #     ],
-        # )
 
-        # # Add CORS preflight OPTIONS method
-        # storage_resource.add_cors_preflight(
-        #     allow_origins=["http://localhost:3000"],  # Allow requests from your React app
-        #     allow_methods=["POST", "OPTIONS"],        # Allow POST and OPTIONS methods
-        #     allow_headers=["Content-Type"],           # Allow necessary headers
-        # )
+        # Note to delete the s3 bucket called bucket
 
-       # S3 bucket to host React app
-        site_bucket = s3.Bucket(self, "ReactAppBucket",
-            website_index_document="index.html",
-            # public_read_access=True,
-            removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_objects=True
+        # S3 bucket to store the React App
+        frontend_bucket = s3.Bucket(self, "ReactApplicationBucket",
+            access_control=s3.BucketAccessControl.PRIVATE,
+            removal_policy=RemovalPolicy.DESTROY, # for testing purposes, remove for production
+            auto_delete_objects=True # for testing purposes, remove for production
         )
+
+        # Upload the React app to the S3 bucket
+        s3_deployment.BucketDeployment(self, "BucketDeployment",
+            destination_bucket=frontend_bucket,
+            sources=[s3_deployment.Source.asset("../aws-site-frontend/build")])
+
+        # Create an Origin Access Identity
+        origin_access_identity = cloudfront.OriginAccessIdentity(self, "OriginAccessIdentity")
+
+        # Grant read access to the OAI
+        frontend_bucket.grant_read(origin_access_identity)
 
         # Create the CloudFront distribution
-        distribution = cloudfront.Distribution(self, "ReactAppDistribution",
+        distribution = cloudfront.Distribution(self, "Distribution",
+            default_root_object="index.html",
             default_behavior={
-                "origin": origins.S3Origin(site_bucket),
-                "viewer_protocol_policy": cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
-            },
-            error_responses=[
-                cloudfront.ErrorResponse(
-                    http_status=404,
-                    response_http_status=200,
-                    response_page_path="/index.html",
-                    ttl=Duration.minutes(30)
-                )
-            ]
-        )
+                "origin": origins.S3Origin(frontend_bucket, origin_access_identity=origin_access_identity),
+            })
 
-        # Deploy the React app to the S3 bucket
-        deployment = s3_deployment.BucketDeployment(self, "DeployReactApp",
-            sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
-            destination_bucket=site_bucket,
-            distribution=distribution,
-            distribution_paths=["/*"]
-        )
+        # # Deploy the React app to the S3 bucket
+        # deployment = s3_deployment.BucketDeployment(self, "DeployReactApp",
+        #     sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
+        #     destination_bucket=site_bucket,
+        #     distribution=distribution,
+        #     distribution_paths=["/*"]
+        # )
 
         # Output the URLs
-        CfnOutput(self, "S3BucketURL", value=site_bucket.bucket_website_url)
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)

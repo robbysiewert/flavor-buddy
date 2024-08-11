@@ -110,16 +110,22 @@ def get(query_params: dict):
         print(identifier)
 
         # Retrieve an item from the table
-        response = table.get_item(
+        dynamodb_response = table.get_item(
             Key={
                 'identifier': identifier,  # Replace 'test_identifier' with your actual identifier value
             }
         )
-        if 'Item' in response:
-            return {
+        if 'Item' in dynamodb_response:
+            response = {
                 'statusCode': 200,
-                'body': json.dumps(response['Item'])
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps(dynamodb_response['Item'])
             }
+            return response
         else:
             return {
                 'statusCode': 404,
