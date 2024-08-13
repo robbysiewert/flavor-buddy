@@ -176,3 +176,4 @@ class CdkStackStack(Stack):
 
         # Output the URLs
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
+        CfnOutput(self, "ApiUrl", value=api.url)
