@@ -1,17 +1,20 @@
-import subprocess
+import boto3
 
-# Get API Gateway URL endpoint
-stack_name = "CdkStackStack"
-result = subprocess.run(
-    ["aws", "cloudformation", "describe-stacks",
-    "--stack-name", stack_name,
-    "--query", "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue",
-    "--output", "text"],
-    capture_output=True,
-    text=True
-)
-api_gateway_url = result.stdout.strip()
+# Initialize the Boto3 CloudFormation client
+client = boto3.client('cloudformation')
 
-# Write the API Gateway URL to a .env file for the React app to read
-with open("../aws-site-frontend/.env", "w") as env_file:
-    env_file.write(f"REACT_APP_API_GATEWAY_URL={api_gateway_url}\n")
+response = client.describe_stacks(StackName='CdkStackStack')
+
+# Extract the URL from the stack outputs
+api_gateway_url = None
+for output in response['Stacks'][0]['Outputs']:
+    if output['OutputKey'] == 'ApiUrl':
+        api_gateway_url = output['OutputValue']
+        break
+
+if api_gateway_url:
+    # Write the API Gateway URL to the .env file for the React app to read
+    with open("../aws-site-frontend/.env", "w") as env_file:
+        env_file.write(f"REACT_APP_API_GATEWAY_URL={api_gateway_url}\n")
+else:
+    print("API Gateway URL not found in stack outputs.")

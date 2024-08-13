@@ -41,7 +41,7 @@ def handler(event, context):
             'body': json.dumps('Invalid operation')
         }
 
-def post(body):
+def post(body: dict):
     """
     Handles an HTTP POST request to add an item to a DynamoDB table.
 
@@ -78,11 +78,13 @@ def post(body):
         )
         print("DynamoDB table updated - returning success")
         return format_successful_response()
+    except ClientError as e:
+        print(e.response['Error']['Message'])
     except Exception as e:
-        print("DynamoDB table not updated - returning failure")
+        print(f"DynamoDB table not updated - returning failure. Error: {e}")
         return format_unsuccessful_response(e)
 
-def get(query_params: dict):
+def get(query_params: dict) -> dict:
     """
     Retrieves an item from a DynamoDB table based on the provided identifier.
 
@@ -130,7 +132,7 @@ def get(query_params: dict):
             'body': json.dumps(f"Error reading item: {e.response['Error']['Message']}")
         }
 
-def delete(body):
+def delete(body: dict) -> dict:
     """
     Deletes an item from a DynamoDB table based on the provided identifier.
 
@@ -185,16 +187,19 @@ def PUT(key, update_expression, expression_attribute_values):
         }
 
 
-def add_food_data():
+def add_food_data() -> None:
 
-    food_data = []
+    # Read the contents of the file into a list
+    with open('food_data.txt', 'r') as file:
+        food_data = json.load(file)
+    print(food_data)
     if food_data:
         # Insert each food item into the 'Foods' table
         for food in food_data:
             food_table.put_item(Item=food)
 
 
-def format_successful_response():
+def format_successful_response() -> dict:
     response = {
         'statusCode': 200,
         'headers': {
@@ -206,7 +211,7 @@ def format_successful_response():
     }
     return response
 
-def format_unsuccessful_response(exception):
+def format_unsuccessful_response(exception) -> dict:
     print(exception)
     response = {
         'statusCode': 500,

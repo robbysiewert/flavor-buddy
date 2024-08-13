@@ -49,11 +49,14 @@ If you are a Windows platform, you would activate the virtualenv like this:
 ```
 % .venv\Scripts\activate.bat
 ```
-
-or
-
+Or
 ```
 % .venv\Scripts\activate
+```
+If using Git Bash on windows platform
+
+```
+% .venv/Scripts/activate.bat
 ```
 
 Once the virtualenv is activated, you can install the required dependencies.
@@ -76,22 +79,10 @@ At this point you can now synthesize the CloudFormation template for this code.
 $ cdk synth
 ```
 
-Build the React app and deploy the stack
+Build the React app and deploy the stack (Git Bash)
 ```
-$ cd ..
-$ cd aws-site-frontend
-$ npm run build
-$ cd ..
-$ cd cdk-stack
-$ cdk deploy
+$ ./deploy.sh
 ```
-Note that deploying the stack writes the API Gateway URl to an environment variable used by the React app, so if this is the first deployment:
-
-Deploy again, this time the URL will be available (the resource is being provisioned when the write is attempted during the first deployment)
-```
-$ cdk deploy
-```
-Then repeat the build and deploy process as outlined above, this time the React app will be built and deployed with the API Gateway URL and the backend calls will be enabled
 
 
 To add additional dependencies, for example other CDK libraries, just add
