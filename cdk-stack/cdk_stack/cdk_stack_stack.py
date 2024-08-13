@@ -13,22 +13,30 @@ from aws_cdk import (
     CfnOutput
 )
 from constructs import Construct
-import subprocess
 
 class CdkStackStack(Stack):
     """
-    This AWS CDK stack defines the infrastructure resources required for a serverless application.
+    This AWS CDK stack defines the infrastructure resources required for a serverless application,
+    including backend and frontend components.
 
     The resources created include:
-    - A DynamoDB table named 'Metadata' for storing application metadata
+    - Three DynamoDB tables:
+      - 'Metadata' for storing application metadata
+      - 'Foods' for storing food-related data
+      - 'Users' for storing user data
     - A Lambda layer containing dependencies for the Lambda function
-    - An IAM role and policy for the Lambda function to access DynamoDB
-    - A Lambda function named 'StorageFunction' to interact with the DynamoDB table
-    - An API Gateway REST API with resources and methods to invoke the Lambda function
+    - An IAM role and policy for the Lambda function to access DynamoDB tables
+    - A Lambda function named 'StorageFunction' to interact with the DynamoDB tables
+    - An API Gateway REST API with resources and methods (GET, PUT, DELETE, POST)
+      to invoke the Lambda function for storage interactions
+    - An S3 bucket to store and serve a React application, configured with CloudFront
+      for content delivery
+    - A CloudFront distribution to serve the frontend with caching and secure access
 
     The stack is configured to remove all resources when deleted (for testing purposes).
     This removal policy should be removed for production deployments.
     """
+
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -39,6 +47,28 @@ class CdkStackStack(Stack):
             table_name='Metadata',
             partition_key=dynamodb.Attribute(
                 name='identifier',
+                type=dynamodb.AttributeType.STRING
+            ),
+            removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
+        )
+
+        # Create a table Food data
+        food = dynamodb.Table(
+            self, 'Foods',
+            table_name='Foods',
+            partition_key=dynamodb.Attribute(
+                name='id',
+                type=dynamodb.AttributeType.STRING
+            ),
+            removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
+        )
+
+        # Create a table for user data
+        user = dynamodb.Table(
+            self, 'Users',
+            table_name='Users',
+            partition_key=dynamodb.Attribute(
+                name='id',
                 type=dynamodb.AttributeType.STRING
             ),
             removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
@@ -76,7 +106,9 @@ class CdkStackStack(Stack):
                         "dynamodb:Query"
                     ],
                     resources=[
-                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Metadata"
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Metadata",
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Foods",
+                        f"arn:aws:dynamodb:{self.region}:{self.account}:table/Users"
                     ]
                 )
             ]
@@ -142,23 +174,6 @@ class CdkStackStack(Stack):
             distribution_paths=["/*"]   # Invalidate all files in the cache
         )
 
-        # Get API Gateway URL endpoint
-        stack_name = "CdkStackStack"
-        result = subprocess.run(
-            ["aws", "cloudformation", "describe-stacks",
-            "--stack-name", stack_name,
-            "--query", "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue",
-            "--output", "text"],
-            capture_output=True,
-            text=True
-        )
-        api_gateway_url = result.stdout.strip()
-
-        # Write the API Gateway URL to a .env file for the React app to read
-        with open("../aws-site-frontend/.env", "w") as env_file:
-            env_file.write(f"REACT_APP_API_GATEWAY_URL={api_gateway_url}\n")
-
         # Output the URLs
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
         CfnOutput(self, "ApiUrl", value=api.url)
-

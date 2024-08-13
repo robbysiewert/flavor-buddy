@@ -3,7 +3,6 @@ import axios from 'axios';
 
 // Define the API Gateway URL as a constant
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
-// const apiUrl = 'https://741vgm2996.execute-api.us-west-2.amazonaws.com/prod/';
 
 export default class Form extends Component {
   constructor(props) {
@@ -33,7 +32,7 @@ export default class Form extends Component {
 
     // Post data to Lambda function
     await axios.post(
-      `${apiUrl}/storage`,
+      `${apiUrl}storage`,
       {
         identifier: name,
         attribute1: message,
@@ -43,7 +42,7 @@ export default class Form extends Component {
     // Fetch data from Lambda function using GET method
     try {
       const response = await axios.get(
-        `${apiUrl}/storage`,
+        `${apiUrl}storage`,
         {
           params: {
             identifier: name,
@@ -55,7 +54,7 @@ export default class Form extends Component {
       const { identifier, Attribute1 } = response.data;
       this.setState({
         response: {
-          identifierMessage: `Your identifier is ${identifier}`,
+          identifierMessage: `V 0.002 Your identifier is ${identifier}`,
           attributeMessage: `Your value is ${Attribute1}`,
         },
       });

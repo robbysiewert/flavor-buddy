@@ -8,6 +8,7 @@ from botocore.exceptions import ClientError
 dynamodb = boto3.resource('dynamodb')
 # Create table object
 table = dynamodb.Table('Metadata')
+food_table = dynamodb.Table('Foods')
 
 def handler(event, context):
     '''
@@ -21,7 +22,6 @@ def handler(event, context):
         body = json.loads(event['body'])
         print("Event Body")
         print(body)
-        print(type(body))
         return post(body)
     elif http_method == 'GET':
         query_params = event['queryStringParameters']
@@ -34,7 +34,6 @@ def handler(event, context):
         body = json.loads(event['body'])
         print("Event Body")
         print(body)
-        print(type(body))
         return delete(body)
     else:
         return {
@@ -42,7 +41,7 @@ def handler(event, context):
             'body': json.dumps('Invalid operation')
         }
 
-def post(body):
+def post(body: dict):
     """
     Handles an HTTP POST request to add an item to a DynamoDB table.
 
@@ -65,6 +64,11 @@ def post(body):
     attribute1_value = body['attribute1']
     print(identifier_value)
     try:
+        if identifier_value == 'add_food_data':
+            print('Calling add_food_data()')
+            add_food_data()
+        # else:
+        print(f'Proceeding with put on {identifier_value}')
         # Add an item to the table
         dynamodb_response = table.put_item(
             Item={
@@ -72,24 +76,15 @@ def post(body):
                 'Attribute1': attribute1_value,
             }
         )
-
-        response = {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
-            'body': json.dumps('Item created successfully')
-        }
-        return response
+        print("DynamoDB table updated - returning success")
+        return format_successful_response()
     except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f"Error creating item: {e.response['Error']['Message']}")
-        }
+        print(e.response['Error']['Message'])
+    except Exception as e:
+        print(f"DynamoDB table not updated - returning failure. Error: {e}")
+        return format_unsuccessful_response(e)
 
-def get(query_params: dict):
+def get(query_params: dict) -> dict:
     """
     Retrieves an item from a DynamoDB table based on the provided identifier.
 
@@ -137,7 +132,7 @@ def get(query_params: dict):
             'body': json.dumps(f"Error reading item: {e.response['Error']['Message']}")
         }
 
-def delete(body):
+def delete(body: dict) -> dict:
     """
     Deletes an item from a DynamoDB table based on the provided identifier.
 
@@ -190,3 +185,37 @@ def PUT(key, update_expression, expression_attribute_values):
             'statusCode': 500,
             'body': json.dumps(f"Error updating item: {e.response['Error']['Message']}")
         }
+
+
+def add_food_data() -> None:
+
+    # Read the contents of the file into a list
+    with open('food_data.txt', 'r') as file:
+        food_data = json.load(file)
+    print(food_data)
+    if food_data:
+        # Insert each food item into the 'Foods' table
+        for food in food_data:
+            food_table.put_item(Item=food)
+
+
+def format_successful_response() -> dict:
+    response = {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        'body': json.dumps('Item created successfully')
+    }
+    return response
+
+def format_unsuccessful_response(exception) -> dict:
+    print(exception)
+    response = {
+        'statusCode': 500,
+        'body': json.dumps(f"Error creating item: {exception.response['Error']['Message']}")
+    }
+    return response
+
