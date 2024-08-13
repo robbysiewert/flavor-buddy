@@ -4,6 +4,7 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 import logging
+import random
 
 # Set up logging
 logger = logging.getLogger()
@@ -29,9 +30,10 @@ def handler(event, context):
             logger.info(f'Event body: {body}')
             return post(body)
         elif http_method == 'GET':
-            query_params = event['queryStringParameters']
-            logger.info(query_params)
-            return get(query_params)
+            # query_params = event['queryStringParameters']
+            # logger.info(query_params)
+            # return get(query_params)
+            return get()
         # elif http_method == 'PUT':
         #     return PUT(event.get('key'), event.get('update_expression'), \
         #             event.get('expression_attribute_values'))
@@ -86,8 +88,12 @@ def post(body: dict):
     except Exception as e:
         return format_unsuccessful_response(e)
 
-def get(query_params: dict) -> dict:
+def get() -> str:
+    return get_random_food()
+
+def get_depricated(query_params: dict) -> dict:
     """
+    **Depricated**
     Retrieves an item from a DynamoDB table based on the provided identifier.
 
     Args:
@@ -159,11 +165,14 @@ def add_food_data() -> None:
     # Read the contents of the file into a list
     with open('food_data.txt', 'r') as file:
         food_data = json.load(file)
+        logger.info(type(food_data))
     logger.info(food_data)
     if food_data:
+        logger.info('Adding food data to the Foods table')
         # Insert each food item into the 'Foods' table
         for food in food_data:
             food_table.put_item(Item=food)
+            logger.info(f"Added {food['id']} to the Foods table")
 
 
 def format_successful_response(data: dict) -> dict:
@@ -190,3 +199,16 @@ def format_unsuccessful_response(exception) -> dict:
         'body': json.dumps(f"Error creating item: {exception}")
     }
     return response
+
+def get_random_food() -> str:
+    """Returns a random food item from the 'Foods' table."""
+    # Use the scan operation to retrieve all items from the table
+    response = food_table.scan()
+    # Get the list of items from the response
+    items = response['Items']
+    # Randomly select an item from the list
+    random_item = random.choice(items)
+    logger.info(random_item)
+    logger.info(type(random_item))
+    logger.info(random_item['id'])
+    return format_successful_response({'message': random_item['id']})
