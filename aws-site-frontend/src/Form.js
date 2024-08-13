@@ -51,19 +51,19 @@ export default class Form extends Component {
       );
 
       // Extract values from the response object
-      const { identifier, Attribute1 } = response.data;
+      const { identifier, attribute1 } = response.data;
       this.setState({
         response: {
-          identifierMessage: `V 0.002 Your identifier is ${identifier}`,
-          attributeMessage: `Your value is ${Attribute1}`,
+          identifierMessage: `Your identifier is ${identifier}`,
+          attributeMessage: `Your value is ${attribute1}`,
         },
       });
     } catch (error) {
       console.error('Error fetching data:', error);
       this.setState({
         response: {
-          identifierMessage: '',
-          attributeMessage: 'Error fetching data',
+          identifierMessage: 'Error fetching identifier',
+          attributeMessage: 'Error fetching attribute',
         },
       });
     }

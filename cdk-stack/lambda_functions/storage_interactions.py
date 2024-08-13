@@ -3,6 +3,11 @@ import json
 """AWS Module for interacting with AWS resources"""
 import boto3
 from botocore.exceptions import ClientError
+import logging
+
+# Set up logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 # Initialize a DynamoDB session
 dynamodb = boto3.resource('dynamodb')
@@ -16,30 +21,28 @@ def handler(event, context):
     This function supports POST, GET, PUT, and DELETE operations.
     '''
     http_method = event['httpMethod']
-    print(f"htttpMethod: {http_method}")
+    logger.info(f"htttpMethod: {http_method}")
 
-    if http_method == 'POST':
-        body = json.loads(event['body'])
-        print("Event Body")
-        print(body)
-        return post(body)
-    elif http_method == 'GET':
-        query_params = event['queryStringParameters']
-        print(query_params)
-        return get(query_params)
-    elif http_method == 'PUT':
-        return PUT(event.get('key'), event.get('update_expression'), \
-                   event.get('expression_attribute_values'))
-    elif http_method == 'DELETE':
-        body = json.loads(event['body'])
-        print("Event Body")
-        print(body)
-        return delete(body)
-    else:
-        return {
-            'statusCode': 400,
-            'body': json.dumps('Invalid operation')
-        }
+    try:
+        if http_method == 'POST':
+            body = json.loads(event['body'])
+            logger.info(f'Event body: {body}')
+            return post(body)
+        elif http_method == 'GET':
+            query_params = event['queryStringParameters']
+            logger.info(query_params)
+            return get(query_params)
+        # elif http_method == 'PUT':
+        #     return PUT(event.get('key'), event.get('update_expression'), \
+        #             event.get('expression_attribute_values'))
+        elif http_method == 'DELETE':
+            body = json.loads(event['body'])
+            logger.info(f'Event body: {body}')
+            return delete(body)
+        else:
+            return format_unsuccessful_response('Unsupported HTTP method')
+    except Exception as e:
+        return format_unsuccessful_response(e)
 
 def post(body: dict):
     """
@@ -59,29 +62,28 @@ def post(body: dict):
     Raises:
         ClientError: If an error occurs while interacting with the DynamoDB table.
     """
-
     identifier_value = body['identifier']
     attribute1_value = body['attribute1']
-    print(identifier_value)
+    logger.info(f'identifier: {identifier_value}, attribute1: {attribute1_value}')
+
+    # Temporary solution to add food data to the Foods table
+    if identifier_value == 'add_food_data':
+        logger.info('Calling add_food_data()')
+        add_food_data()
+
     try:
-        if identifier_value == 'add_food_data':
-            print('Calling add_food_data()')
-            add_food_data()
-        # else:
-        print(f'Proceeding with put on {identifier_value}')
         # Add an item to the table
         dynamodb_response = table.put_item(
             Item={
                 'identifier': identifier_value,
-                'Attribute1': attribute1_value,
+                'attribute1': attribute1_value,
             }
         )
-        print("DynamoDB table updated - returning success")
-        return format_successful_response()
+        logger.info("DynamoDB table updated")
+        return format_successful_response({'message': 'Item added to DynamoDB table successfully'})
     except ClientError as e:
-        print(e.response['Error']['Message'])
+        return format_unsuccessful_response(e)
     except Exception as e:
-        print(f"DynamoDB table not updated - returning failure. Error: {e}")
         return format_unsuccessful_response(e)
 
 def get(query_params: dict) -> dict:
@@ -102,35 +104,21 @@ def get(query_params: dict) -> dict:
     """
     try:
         identifier = query_params['identifier']
-        print(identifier)
+        logger.info(identifier)
 
         # Retrieve an item from the table
         dynamodb_response = table.get_item(
             Key={
-                'identifier': identifier,  # Replace 'test_identifier' with your actual identifier value
+                'identifier': identifier,
             }
         )
+        logger.info(dynamodb_response)
         if 'Item' in dynamodb_response:
-            response = {
-                'statusCode': 200,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
-                'body': json.dumps(dynamodb_response['Item'])
-            }
-            return response
+            return format_successful_response(dynamodb_response['Item'])
         else:
-            return {
-                'statusCode': 404,
-                'body': json.dumps('Item not found')
-            }
+            return format_unsuccessful_response('Item not found in table')
     except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f"Error reading item: {e.response['Error']['Message']}")
-        }
+        return format_unsuccessful_response(e)
 
 def delete(body: dict) -> dict:
     """
@@ -150,7 +138,7 @@ def delete(body: dict) -> dict:
     """
 
     identifier_value = body['identifier']
-    print(identifier_value)
+    logger.info(identifier_value)
     try:
         # Add an item to the table
         response = table.delete_item(
@@ -158,33 +146,12 @@ def delete(body: dict) -> dict:
                 'identifier': identifier_value,
             }
         )
-        return {
-            'statusCode': 200,
-            'body': json.dumps('Item deleted successfully')
-        }
+        return format_successful_response('Item deleted successfully')
     except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f"Error deleting item: {e.response['Error']['Message']}")
-        }
+        return format_unsuccessful_response(e)
 
-def PUT(key, update_expression, expression_attribute_values):
-    try:
-        response = table.update_item(
-            Key=key,
-            UpdateExpression=update_expression,
-            ExpressionAttributeValues=expression_attribute_values,
-            ReturnValues="UPDATED_NEW"
-        )
-        return {
-            'statusCode': 200,
-            'body': json.dumps(response['Attributes'])
-        }
-    except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f"Error updating item: {e.response['Error']['Message']}")
-        }
+# def put(key, update_expression, expression_attribute_values):
+    # TODO
 
 
 def add_food_data() -> None:
@@ -192,14 +159,14 @@ def add_food_data() -> None:
     # Read the contents of the file into a list
     with open('food_data.txt', 'r') as file:
         food_data = json.load(file)
-    print(food_data)
+    logger.info(food_data)
     if food_data:
         # Insert each food item into the 'Foods' table
         for food in food_data:
             food_table.put_item(Item=food)
 
 
-def format_successful_response() -> dict:
+def format_successful_response(data: dict) -> dict:
     response = {
         'statusCode': 200,
         'headers': {
@@ -207,15 +174,19 @@ def format_successful_response() -> dict:
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
-        'body': json.dumps('Item created successfully')
+        'body': json.dumps(data)
     }
     return response
 
 def format_unsuccessful_response(exception) -> dict:
-    print(exception)
+    logger.exception(exception)
     response = {
         'statusCode': 500,
-        'body': json.dumps(f"Error creating item: {exception.response['Error']['Message']}")
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        'body': json.dumps(f"Error creating item: {exception}")
     }
     return response
-
