@@ -15,6 +15,7 @@ dynamodb = boto3.resource('dynamodb')
 # Create table object
 table = dynamodb.Table('Metadata')
 food_table = dynamodb.Table('Foods')
+user_table = dynamodb.Table('Users')
 
 def handler(event, context):
     '''
@@ -46,7 +47,67 @@ def handler(event, context):
     except Exception as e:
         return format_unsuccessful_response(e)
 
-def post(body: dict):
+
+def post(body: dict) -> dict:
+
+    try: # TODO reduce size of try catch chunks
+
+        id = body['id']
+        if id == 'add_user_data':
+            logger.info('Calling add_user_data()')
+            add_user_data()
+            return format_successful_response({'message': 'Success'})
+        logger.info(f'id: {id}')
+        dynamodb_response = food_table.get_item(
+            Key={
+                'id': id
+            }
+        )
+        if 'Item' in dynamodb_response:
+            food = dynamodb_response['Item']
+            logger.info("Food:")
+            logger.info(food.items())
+
+            # Initialize parts of the update expression and expression attribute values
+            update_expression = "SET "
+            expression_attribute_values = {}
+
+            for attribute, val in food.items():
+                if attribute == "id" or not val:
+                    continue
+
+                logger.info(f'{attribute}: {val}')
+                user_attribute = map_food_to_user.get(attribute)
+                if user_attribute:
+                    logger.info(f'user_attribute: {user_attribute}')
+                    # Append to the update expression
+                    update_expression += f'{user_attribute} = {user_attribute} + :increment, '
+                    expression_attribute_values[':increment'] = 1
+
+            # Remove the trailing comma and space from the update expression
+            update_expression = update_expression.rstrip(', ')
+
+            # Perform the update only if there are attributes to update
+            if expression_attribute_values:
+                user_id = 'User123'
+                response = user_table.update_item(
+                    Key={'id': user_id},
+                    UpdateExpression=update_expression,
+                    ExpressionAttributeValues=expression_attribute_values,
+                    ReturnValues='UPDATED_NEW'
+                )
+                logger.info("Update response:")
+                logger.info(response)
+            else:
+                logger.info("No attributes to update.")
+            return format_successful_response({'message': 'Success'})
+    except ClientError as e:
+        return format_unsuccessful_response(e)
+    except Exception as e:
+        return format_unsuccessful_response(e)
+
+def post_depricated(body: dict) -> dict:
+
     """
     Handles an HTTP POST request to add an item to a DynamoDB table.
 
@@ -72,6 +133,10 @@ def post(body: dict):
     if identifier_value == 'add_food_data':
         logger.info('Calling add_food_data()')
         add_food_data()
+    # Temporary solution to add user data to the User table
+    if identifier_value == 'add_user_data':
+        logger.info('Calling add_user_data()')
+        add_user_data()
 
     try:
         # Add an item to the table
@@ -89,7 +154,8 @@ def post(body: dict):
         return format_unsuccessful_response(e)
 
 def get() -> str:
-    return get_random_food()
+    # return get_random_food()
+    return get_food_suggestions()
 
 def get_depricated(query_params: dict) -> dict:
     """
@@ -174,6 +240,19 @@ def add_food_data() -> None:
             food_table.put_item(Item=food)
             logger.info(f"Added {food['id']} to the Foods table")
 
+def add_user_data() -> None:
+
+    # Read the contents of the file into a list
+    with open('user_data.txt', 'r') as file:
+        user_data = json.load(file)
+        logger.info(type(user_data))
+    logger.info(user_data)
+    if user_data:
+        logger.info('Adding user data to the user table')
+        # Insert each food item into the 'Foods' table
+        for user in user_data:
+            user_table.put_item(Item=user)
+            logger.info(f"Added {user['id']} to the Foods table")
 
 def format_successful_response(data: dict) -> dict:
     response = {
@@ -196,7 +275,7 @@ def format_unsuccessful_response(exception) -> dict:
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
-        'body': json.dumps(f"Error creating item: {exception}")
+        'body': json.dumps(f"Error: {exception}")
     }
     return response
 
@@ -212,3 +291,107 @@ def get_random_food() -> str:
     logger.info(type(random_item))
     logger.info(random_item['id'])
     return format_successful_response({'message': random_item['id']})
+
+
+def get_food_suggestions():
+
+    try:
+        # assuming the function calling this function will return the response from this function
+
+        # Get the user preferences
+        user_id = 'User123'
+        user_item = user_table.get_item(Key={'id': user_id}).get('Item', {})
+
+        if not user_item:
+            return format_unsuccessful_response(f"User with id {user_id} not found.")
+
+        # Get all food items
+        food_items = food_table.scan().get('Items', [])
+
+        if not food_items:
+            return format_unsuccessful_response("No food items found.")
+
+        suggestions = []
+
+        for food_item in food_items:
+            score = 0
+
+            for user_attr, user_weight in user_item.items():
+                if user_attr == 'id' or user_weight == 0:
+                    continue
+
+                food_attr = get_food_from_user(user_attr)
+                if food_attr and food_item.get(food_attr):
+                    score += user_weight
+                # logger.info(food_item['id'], score)
+
+            suggestions.append((food_item['id'], score))
+
+        # Sort the suggestions by score in descending order
+        sorted_suggestions = sorted(suggestions, key=lambda x: x[1], reverse=True)
+
+        # Convert sorted list into a ranked dictionary
+        ranked_suggestions = {food: rank + 1 for rank, (food, _) in enumerate(sorted_suggestions)}
+
+        logger.info(ranked_suggestions)
+
+
+        # Return the food items with the highest scores
+        return format_successful_response(ranked_suggestions)
+    except ClientError as e:
+        return format_unsuccessful_response(e)
+    except Exception as e:
+        return format_unsuccessful_response(e)
+
+def get_food_from_user(target_user_attribute):
+    """
+    Reverse the map_food_to_user dict
+    """
+  
+    for food_attribute, user_attribute in map_food_to_user.items():
+        if target_user_attribute == user_attribute:
+            return food_attribute
+
+    return "key doesn't exist"
+
+map_food_to_user = {
+    "isSweet": "sweet",
+    "isSalty": "salty",
+    "isSour": "sour",
+    "isBitter": "bitter",
+    "isSpicy": "spicy",
+    "isUmami": "umami",
+    "isSavory": "savory",
+    "isSmoky": "smoky",
+    "isTangy": "tangy",
+    "isRich": "rich",
+    "isCrispy": "crispy",
+    "isCrunchy": "crunchy",
+    "isChewy": "chewy",
+    "isCreamy": "creamy",
+    "isTender": "tender",
+    "isHighProtein": "highProtein",
+    "isLowCarb": "lowCarb",
+    "isGlutenFree": "glutenFree",
+    "isDairyFree": "dairyFree",
+    "isVegan": "vegan",
+    "isGrilled": "grilled",
+    "isFried": "fried",
+    "isBaked": "baked",
+    "isRoasted": "roasted",
+    "isSteamed": "steamed",
+    "isHot": "hot",
+    "isCold": "cold",
+    "isRoomTemperature": "roomTemperature",
+    "isFrozen": "frozen",
+    "isMexican": "mexican",
+    "isItalian": "italian",
+    "isAsian": "asian",
+    "isMediterranean": "mediterranean",
+    "isFusion": "fusion",
+    "isComfortFood": "comfortFood",
+    "isHealthy": "healthy",
+    "isIndulgent": "indulgent",
+    "isExotic": "exotic",
+    "isOrganic": "organic"
+}
