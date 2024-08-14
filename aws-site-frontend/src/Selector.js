@@ -63,7 +63,7 @@ const Selector = () => {
                     </button>
                 ))
             ) : (
-                <p>Loading buttons...</p>
+                <p>Loading options...</p>
             )}
             {selectedItems.length >= 3 && (
                 <button onClick={handleFinishClick}>Finish</button>
