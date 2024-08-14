@@ -25,6 +25,8 @@ try:
         domain_name = file.read().strip()
 except FileNotFoundError:
     raise ValueError(f'File {file_path} not found')
+if not domain_name:
+    raise ValueError(f'File {file_path} is empty')
 
 class CdkStackStack(Stack):
     """
@@ -146,78 +148,14 @@ class CdkStackStack(Stack):
         food_suggestion_resource.add_method("DELETE")
         food_suggestion_resource.add_method("POST")
 
-        # # S3 bucket to store the React App
-        # frontend_bucket = s3.Bucket(self, "ReactApplicationBucket",
-        #     access_control=s3.BucketAccessControl.PRIVATE,
-        #     removal_policy=RemovalPolicy.DESTROY, # for testing purposes, remove for production
-        #     auto_delete_objects=True # for testing purposes, remove for production
-        # )
-
-        # # Create an Origin Access Identity
-        # origin_access_identity = cloudfront.OriginAccessIdentity(self, "OriginAccessIdentity")
-
-        # # Grant read access to the OAI
-        # frontend_bucket.grant_read(origin_access_identity)
-
-        # # Hosted Zone
-        # hosted_zone = route53.HostedZone.from_lookup(self, "HostedZone",
-        #     domain_name=domain_name
-        # )
-
-        # # # SSL Certificate
-        # # certificate = acm.Certificate(self, "SiteCertificate",
-        # #     domain_name=domain_name,
-        # #     validation=acm.CertificateValidation.from_dns(hosted_zone)
-        # # )
-
-        # # Create the CloudFront distribution
-        # distribution = cloudfront.Distribution(self, "Distribution",
-        #     default_root_object="index.html",
-        #     default_behavior={
-        #         "origin": origins.S3Origin(frontend_bucket, origin_access_identity=origin_access_identity),
-        #     },
-        #     # domain_names=[domain_name, f"www.{domain_name}"],
-        #     # certificate=certificate
-        # )
-
-        # # Route 53 Alias Records for CloudFront
-        # route53.ARecord(self, "AliasRecord",
-        #     zone=hosted_zone,
-        #     target=route53.RecordTarget.from_alias(targets.CloudFrontTarget(distribution)),
-        #     record_name=domain_name
-        # )
-
-        # route53.ARecord(self, "AliasRecordWWW",
-        #     zone=hosted_zone,
-        #     target=route53.RecordTarget.from_alias(targets.CloudFrontTarget(distribution)),
-        #     record_name=f"www.{domain_name}"
-        # )
-
-        # # Upload the React app to the S3 bucket and invalidate the Cloudfront cache
-        # s3_deployment.BucketDeployment(self, "BucketDeployment",
-        #     destination_bucket=frontend_bucket,
-        #     sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
-        #     distribution=distribution,  # Link the distribution to the deployment
-        #     distribution_paths=["/*"]   # Invalidate all files in the cache
-        # )
-
-        # # Output the URLs
-        # CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
-        # CfnOutput(self, "ApiUrl", value=api_gateway.url)
-        # CfnOutput(self, "ApiResourcePath", value=food_suggestion_resource.path)
-
-
-#############################################################
-
-
         # Hosted Zone
         zone = route53.HostedZone.from_lookup(self, "HostedZone",
             domain_name=domain_name
         )
 
         # Medium Create S3 Bucket to store the React App
-        site_bucket = s3.Bucket(self, "SiteBucket",
-            bucket_name=f'{domain_name}.{domain_name}',
+        site_bucket = s3.Bucket(self, "SiteBucket", # TODO change to ReactApplicationBucket
+            bucket_name=f'{domain_name}.{domain_name}', # TODO fix this
             website_index_document="index.html",
             public_read_access=True,
             block_public_access=s3.BlockPublicAccess(block_public_acls=False, block_public_policy=False),
@@ -232,12 +170,18 @@ class CdkStackStack(Stack):
             region="us-east-1"  # standard for ACM certs
         )
 
+        # # Create Certificate
+        # site_certificate = acm.Certificate(self, "SiteCertificate",
+        #     domain_name=domain_name,
+        #     validation=acm.CertificateValidation.from_dns(zone)
+        # )
+
         # Create CloudFront Distribution
         site_distribution = cloudfront.CloudFrontWebDistribution(self, "SiteDistribution",
             viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
                 certificate=site_certificate,
                 aliases=[domain_name],
-                security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2019,
+                security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
             ),
             origin_configs=[
                 cloudfront.SourceConfiguration(
@@ -257,14 +201,23 @@ class CdkStackStack(Stack):
             record_name=domain_name
         )
 
+        route53.ARecord(self, "AliasRecordWWW",
+            zone=zone,
+            target=route53.RecordTarget.from_alias(targets.CloudFrontTarget(site_distribution)),
+            record_name=f"www.{domain_name}"
+        )
+
         # Deploy site to S3
-        s3_deployment.BucketDeployment(self, "Deployment",
+        s3_deployment.BucketDeployment(self, "BucketDeployment",
             sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
             destination_bucket=site_bucket,
             distribution=site_distribution,
             distribution_paths=["/*"]
         )
 
+        # # Output the URLs
+        CfnOutput(self, "ApiUrl", value=api_gateway.url)
+        CfnOutput(self, "ApiResourcePath", value=food_suggestion_resource.path)
 
 
 
