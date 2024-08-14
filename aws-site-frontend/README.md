@@ -1,14 +1,17 @@
 # The following contains setup instructions for the frontend react app
 
-Install create-react-app
-```
-$ npm install -g create-react-app
-$ npm install react-router-dom
-```
 Ensure node and npm are installed
 ```
 $ node -v
 $ npm -v
+```
+Install create-react-app
+```
+$ npm install -g create-react-app
+```
+Install react-router-dom
+```
+$ npm install react-router-dom
 ```
 Create a react app in the root directory
 ```

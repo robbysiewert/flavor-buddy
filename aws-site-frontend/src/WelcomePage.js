@@ -12,10 +12,10 @@ const WelcomePage = () => {
 
     return (
         <div className="welcome-container">
-            <h1>Welcome to Food Selector!</h1>
+            <h1>Welcome to Flavor Buddy!</h1>
             <p>
-                This site helps you find the best food options based on your preferences. 
-                You can select your favorite foods, and we'll suggest the top choices for you to try.
+                I'll help you find the best food options based on your preferences.
+                You can select your favorite foods, and I'll suggest the top choices for you to try.
             </p>
             <button onClick={handleContinue} className="continue-button">
                 Continue
