@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Selector.css'; // Ensure you have this CSS file
 
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
@@ -10,6 +11,17 @@ const Selector = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Make the initial POST request
+        const postUserData = async () => {
+            try {
+                await axios.post(`${apiUrl}storage`, { id: 'add_user_data' });
+                console.log('Initial POST request successful');
+            } catch (error) {
+                console.error('Error making initial POST request:', error);
+            }
+        };
+
+        postUserData();
         fetchButtonNames();
     }, []);
 
@@ -54,19 +66,27 @@ const Selector = () => {
     };
 
     return (
-        <div>
-            <h1>What are you in the mood for today?</h1>
-            {buttonNames.length > 0 ? (
-                buttonNames.map((name, index) => (
-                    <button key={index} onClick={() => handleButtonClick(name)}>
-                        {name}
-                    </button>
-                ))
-            ) : (
-                <p>Loading options...</p>
-            )}
+        <div className="selector-container">
+            <div className="instructions">
+                <h1>What are you in the mood for today?</h1>
+                <p>Select at least three items:</p>
+                <p>More selections equals better suggestions!</p>
+            </div>
+            <div className="buttons-container">
+                {buttonNames.length > 0 ? (
+                    buttonNames.map((name, index) => (
+                        <button key={index} onClick={() => handleButtonClick(name)}>
+                            {name}
+                        </button>
+                    ))
+                ) : (
+                    <p>Loading options...</p>
+                )}
+            </div>
             {selectedItems.length >= 3 && (
-                <button onClick={handleFinishClick}>Finish</button>
+                <button className="finish-button" onClick={handleFinishClick}>
+                    Finish
+                </button>
             )}
         </div>
     );

@@ -1,20 +1,27 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import './SuggestionsPage.css'; // Import your custom CSS
 
 const SuggestionsPage = () => {
-    const location = useLocation();
-    const suggestions = location.state?.suggestions || {};
+    const { state } = useLocation();
+    const { suggestions } = state || {};
 
-    const topThreeSuggestions = Object.keys(suggestions)
-        .slice(0, 3)
-        .map((key) => suggestions[key]);
+    // Sort suggestions by rank
+    const sortedSuggestions = Object.entries(suggestions || {}).sort(
+        ([rankA], [rankB]) => parseInt(rankA) - parseInt(rankB)
+    );
 
     return (
-        <div>
-            <h2>Suggestions:</h2>
-            <ul>
-                {topThreeSuggestions.map((suggestion, index) => (
-                    <li key={index}>{suggestion}</li>
+        <div className="suggestions-container">
+            <h1>Suggested dishes based on your choices:</h1>
+            <ul className="suggestions-list">
+                {sortedSuggestions.map(([_, food], index) => (
+                    <li
+                        key={index}
+                        className={`suggestion-item ${index === 0 ? 'top-suggestion' : ''}`}
+                    >
+                        {food}
+                    </li>
                 ))}
             </ul>
         </div>
