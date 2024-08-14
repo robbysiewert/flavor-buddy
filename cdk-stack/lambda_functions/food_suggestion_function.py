@@ -52,9 +52,14 @@ def post(body: dict) -> dict:
     try: # TODO reduce size of try catch chunks
 
         id = body['id']
+        # Temporary solution to add data to the tables
         if id == 'add_user_data':
             logger.info('Calling add_user_data()')
             add_user_data()
+            return format_successful_response({'message': 'Success'})
+        if id == 'add_food_data':
+            logger.info('Calling add_food_data()')
+            add_food_data()
             return format_successful_response({'message': 'Success'})
         logger.info(f'id: {id}')
         dynamodb_response = food_table.get_item(
