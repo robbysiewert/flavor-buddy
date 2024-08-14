@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import Form from './Form.js';
+// import Form from './Form.js'; # remove later
 import Selector from './Selector.js';
 
 class App extends Component {

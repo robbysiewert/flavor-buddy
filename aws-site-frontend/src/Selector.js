@@ -3,22 +3,18 @@ import axios from 'axios';
 
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
-const ButtonsPage = () => {
+const Selector = () => {
     const [buttonNames, setButtonNames] = useState([]);
+    const [selectedFoods, setSelectedFoods] = useState([]);
+    const [suggestions, setSuggestions] = useState(null);
 
     const fetchButtonNames = async () => {
         try {
-            // Make a single GET request with queryStringParameters
             const response = await axios.get(`${apiUrl}storage`, {
-                params: {
-                    requested_item: 'random_food'
-                }
+                params: { requested_item: 'random_food' }
             });
 
-            // Extract the food names from the response
             const { random_item1, random_item2, random_item3 } = response.data;
-
-            // Set the button names in state
             setButtonNames([random_item1, random_item2, random_item3]);
         } catch (error) {
             console.error('Error fetching button names:', error);
@@ -26,19 +22,45 @@ const ButtonsPage = () => {
     };
 
     useEffect(() => {
-        fetchButtonNames(); // Fetch button names when the component mounts
+        fetchButtonNames();
     }, []);
 
-    // Handler for button click
     const handleButtonClick = async (buttonName) => {
         try {
             await axios.post(`${apiUrl}storage`, { id: buttonName });
-            console.log(`POST request successful for button: ${buttonName}`);
-            fetchButtonNames(); // Refresh button names after a button is clicked
+            setSelectedFoods(prevSelectedFoods => [...prevSelectedFoods, buttonName]);
+            fetchButtonNames();
         } catch (error) {
             console.error('Error making POST request:', error);
         }
     };
+
+    const handleFinishClick = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}storage`, {
+                params: { requested_item: 'food_suggestions' }
+            });
+            console.log(`GET request successful: food_suggestions`);
+
+            const { suggestions } = response.data;
+            setSuggestions(suggestions);
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+        }
+    };
+
+    if (suggestions) {
+        return (
+            <div>
+                <h2>Suggestions:</h2>
+                <ul>
+                    {suggestions.map((suggestion, index) => (
+                        <li key={index}>{suggestion}</li>
+                    ))}
+                </ul>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -47,8 +69,11 @@ const ButtonsPage = () => {
                     {name}
                 </button>
             ))}
+            {selectedFoods.length >= 3 && (
+                <button onClick={handleFinishClick}>Finish</button>
+            )}
         </div>
     );
 };
 
-export default ButtonsPage;
+export default Selector;
