@@ -17,6 +17,7 @@ $ cdk init app --language python
 ```
 $ pip install aws-cdk-lib
 ```
+In the stack directory, add your domain name to a file titled 'domain_name.txt'
 
 # Welcome to your CDK Python project!
 

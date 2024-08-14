@@ -71,8 +71,7 @@ const Selector = () => {
         <div className="selector-container">
             <div className="instructions">
                 <h1>What are you in the mood for today?</h1>
-                <p>Select at least three items:</p>
-                <p>More selections equals better suggestions!</p>
+                <p>Select at least three items. More selections equal better suggestions!</p>
             </div>
             <div className="buttons-container">
                 {buttonNames.length > 0 ? (
