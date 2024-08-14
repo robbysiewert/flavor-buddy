@@ -164,7 +164,7 @@ class CdkStackStack(Stack):
         )
 
         # Create Certificate
-        site_certificate = acm.DnsValidatedCertificate(self, "SiteCertificate",
+        site_certificate = acm.DnsValidatedCertificate(self, "SiteCertificate", # TODO update, DnsValidatedCertificate is depricated
             domain_name=domain_name,
             hosted_zone=zone,
             region="us-east-1"  # standard for ACM certs
@@ -172,7 +172,7 @@ class CdkStackStack(Stack):
 
         # # Create Certificate
         # site_certificate = acm.Certificate(self, "SiteCertificate",
-        #     domain_name=domain_name,
+        #     domain_name=f'{subdomain_name}.{domain_name}',
         #     validation=acm.CertificateValidation.from_dns(zone)
         # )
 
