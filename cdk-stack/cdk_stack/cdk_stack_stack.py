@@ -26,7 +26,7 @@ class CdkStackStack(Stack):
       - 'Users' for storing user data
     - A Lambda layer containing dependencies for the Lambda function
     - An IAM role and policy for the Lambda function to access DynamoDB tables
-    - A Lambda function named 'StorageFunction' to interact with the DynamoDB tables
+    - A Lambda function named 'FoodSuggestionFunction' to interact with the DynamoDB tables
     - An API Gateway REST API with resources and methods (GET, PUT, DELETE, POST)
       to invoke the Lambda function for storage interactions
     - An S3 bucket to store and serve a React application, configured with CloudFront
@@ -37,20 +37,8 @@ class CdkStackStack(Stack):
     This removal policy should be removed for production deployments.
     """
 
-
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        # Create a table for metadata storage
-        metadata = dynamodb.Table(
-            self, 'Metadata',
-            table_name='Metadata',
-            partition_key=dynamodb.Attribute(
-                name='identifier',
-                type=dynamodb.AttributeType.STRING
-            ),
-            removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
-        )
 
         # Create a table Food data
         food = dynamodb.Table(
@@ -83,8 +71,8 @@ class CdkStackStack(Stack):
         )
 
         # Create IAM role for Lambda function
-        storage_function_role = iam.Role(
-            self, "StorageFunctionRole",
+        food_suggestion_function_role = iam.Role(
+            self, "FoodSuggestionFunctionRole",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -92,9 +80,9 @@ class CdkStackStack(Stack):
         )
 
         # Create a custom IAM policy for the Lambda
-        storage_function_policy = iam.Policy(
-            self, 'StorageFunctionPolicy',
-            policy_name='StorageFunctionPolicy',
+        food_suggestion_function_policy = iam.Policy(
+            self, 'FoodSuggestionFunctionPolicy',
+            policy_name='FoodSuggestionFunctionPolicy',
             statements=[
                 iam.PolicyStatement(
                     actions=[
@@ -115,22 +103,22 @@ class CdkStackStack(Stack):
         )
 
         # Attach the policy to the Lambda function's role
-        storage_function_role.attach_inline_policy(storage_function_policy)
+        food_suggestion_function_role.attach_inline_policy(food_suggestion_function_policy)
 
         # Lambda function to interact with DynamoDB
-        storage_function = _lambda.Function(
-            self, 'StorageFunction',
+        food_suggestion_function = _lambda.Function(
+            self, 'FoodSuggestionFunction',
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler='storage_interactions.handler',
+            handler='food_suggestion_function.handler',
             code=_lambda.Code.from_asset('lambda_functions'),
             layers=[dependency],
-            role=storage_function_role
+            role=food_suggestion_function_role
         )
 
         # Create the API Gateway with CORS enabled
-        api = apigateway.LambdaRestApi(
-            self, 'MyApiGateway',
-            handler=storage_function,
+        api_gateway = apigateway.LambdaRestApi(
+            self, 'AwsSiteApiGateway',
+            handler=food_suggestion_function,
             proxy=False,
             default_cors_preflight_options={
                 "allow_origins": apigateway.Cors.ALL_ORIGINS,
@@ -140,11 +128,11 @@ class CdkStackStack(Stack):
         )
 
         # Define a resource and method for the API
-        storage_resource = api.root.add_resource("storage") # /storage
-        storage_resource.add_method("GET")
-        storage_resource.add_method("PUT")
-        storage_resource.add_method("DELETE")
-        storage_resource.add_method("POST")
+        food_suggestion_resource = api_gateway.root.add_resource("food_suggestion") # /food_suggestion
+        food_suggestion_resource.add_method("GET")
+        food_suggestion_resource.add_method("PUT")
+        food_suggestion_resource.add_method("DELETE")
+        food_suggestion_resource.add_method("POST")
 
         # S3 bucket to store the React App
         frontend_bucket = s3.Bucket(self, "ReactApplicationBucket",
@@ -176,4 +164,4 @@ class CdkStackStack(Stack):
 
         # Output the URLs
         CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
-        CfnOutput(self, "ApiUrl", value=api.url)
+        CfnOutput(self, "ApiUrl", value=api_gateway.url)
