@@ -14,7 +14,7 @@ const Selector = () => {
         // Make the initial POST request
         const postUserData = async () => {
             try {
-                await axios.post(`${apiUrl}storage`, { id: 'add_user_data' });
+                await axios.post(`${apiUrl}`, { id: 'add_user_data' });
                 console.log('Initial POST request successful');
             } catch (error) {
                 console.error('Error making initial POST request:', error);
@@ -27,12 +27,14 @@ const Selector = () => {
 
     const fetchButtonNames = async () => {
         try {
-            const response = await axios.get(`${apiUrl}storage`, {
+            console.log('Fetching button names');
+            console.log('API URL:', apiUrl);
+            const response = await axios.get(`${apiUrl}`, {
                 params: {
                     requested_item: 'random_food'
                 }
             });
-
+            console.log('Response data:', response.data);
             const { random_item1, random_item2, random_item3 } = response.data;
             setButtonNames([random_item1, random_item2, random_item3]);
         } catch (error) {
@@ -42,7 +44,7 @@ const Selector = () => {
 
     const handleButtonClick = async (buttonName) => {
         try {
-            await axios.post(`${apiUrl}storage`, { id: buttonName });
+            await axios.post(`${apiUrl}`, { id: buttonName });
             setSelectedItems([...selectedItems, buttonName]);
             fetchButtonNames();
         } catch (error) {
@@ -52,7 +54,7 @@ const Selector = () => {
 
     const handleFinishClick = async () => {
         try {
-            const response = await axios.get(`${apiUrl}storage`, {
+            const response = await axios.get(`${apiUrl}`, {
                 params: {
                     requested_item: 'food_suggestions'
                 }
@@ -69,8 +71,7 @@ const Selector = () => {
         <div className="selector-container">
             <div className="instructions">
                 <h1>What are you in the mood for today?</h1>
-                <p>Select at least three items:</p>
-                <p>More selections equals better suggestions!</p>
+                <p>Select at least three items. More selections equal better suggestions!</p>
             </div>
             <div className="buttons-container">
                 {buttonNames.length > 0 ? (

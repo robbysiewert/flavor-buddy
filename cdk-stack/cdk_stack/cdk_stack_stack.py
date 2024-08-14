@@ -9,10 +9,24 @@ from aws_cdk import (
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
     aws_s3_deployment as s3_deployment,
+    aws_route53 as route53,
+    aws_certificatemanager as acm,
+    aws_route53_targets as targets,
     RemovalPolicy,
     CfnOutput
 )
 from constructs import Construct
+import os
+
+# Read the domain name from a file
+try:
+    file_path = os.path.join(os.path.dirname(__file__), 'domain_name.txt')
+    with open(file_path, 'r') as file:
+        domain_name = file.read().strip()
+except FileNotFoundError:
+    raise ValueError(f'File {file_path} not found')
+if not domain_name:
+    raise ValueError(f'File {file_path} is empty')
 
 class CdkStackStack(Stack):
     """
@@ -26,7 +40,7 @@ class CdkStackStack(Stack):
       - 'Users' for storing user data
     - A Lambda layer containing dependencies for the Lambda function
     - An IAM role and policy for the Lambda function to access DynamoDB tables
-    - A Lambda function named 'StorageFunction' to interact with the DynamoDB tables
+    - A Lambda function named 'FoodSuggestionFunction' to interact with the DynamoDB tables
     - An API Gateway REST API with resources and methods (GET, PUT, DELETE, POST)
       to invoke the Lambda function for storage interactions
     - An S3 bucket to store and serve a React application, configured with CloudFront
@@ -37,20 +51,8 @@ class CdkStackStack(Stack):
     This removal policy should be removed for production deployments.
     """
 
-
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        # Create a table for metadata storage
-        metadata = dynamodb.Table(
-            self, 'Metadata',
-            table_name='Metadata',
-            partition_key=dynamodb.Attribute(
-                name='identifier',
-                type=dynamodb.AttributeType.STRING
-            ),
-            removal_policy=RemovalPolicy.DESTROY,  # for testing purposes, remove for production
-        )
 
         # Create a table Food data
         food = dynamodb.Table(
@@ -83,8 +85,8 @@ class CdkStackStack(Stack):
         )
 
         # Create IAM role for Lambda function
-        storage_function_role = iam.Role(
-            self, "StorageFunctionRole",
+        food_suggestion_function_role = iam.Role(
+            self, "FoodSuggestionFunctionRole",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
@@ -92,9 +94,9 @@ class CdkStackStack(Stack):
         )
 
         # Create a custom IAM policy for the Lambda
-        storage_function_policy = iam.Policy(
-            self, 'StorageFunctionPolicy',
-            policy_name='StorageFunctionPolicy',
+        food_suggestion_function_policy = iam.Policy(
+            self, 'FoodSuggestionFunctionPolicy',
+            policy_name='FoodSuggestionFunctionPolicy',
             statements=[
                 iam.PolicyStatement(
                     actions=[
@@ -115,22 +117,22 @@ class CdkStackStack(Stack):
         )
 
         # Attach the policy to the Lambda function's role
-        storage_function_role.attach_inline_policy(storage_function_policy)
+        food_suggestion_function_role.attach_inline_policy(food_suggestion_function_policy)
 
         # Lambda function to interact with DynamoDB
-        storage_function = _lambda.Function(
-            self, 'StorageFunction',
+        food_suggestion_function = _lambda.Function(
+            self, 'FoodSuggestionFunction',
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler='storage_interactions.handler',
+            handler='food_suggestion_function.handler',
             code=_lambda.Code.from_asset('lambda_functions'),
             layers=[dependency],
-            role=storage_function_role
+            role=food_suggestion_function_role
         )
 
         # Create the API Gateway with CORS enabled
-        api = apigateway.LambdaRestApi(
-            self, 'MyApiGateway',
-            handler=storage_function,
+        api_gateway = apigateway.LambdaRestApi(
+            self, 'AwsSiteApiGateway',
+            handler=food_suggestion_function,
             proxy=False,
             default_cors_preflight_options={
                 "allow_origins": apigateway.Cors.ALL_ORIGINS,
@@ -140,40 +142,85 @@ class CdkStackStack(Stack):
         )
 
         # Define a resource and method for the API
-        storage_resource = api.root.add_resource("storage") # /storage
-        storage_resource.add_method("GET")
-        storage_resource.add_method("PUT")
-        storage_resource.add_method("DELETE")
-        storage_resource.add_method("POST")
+        food_suggestion_resource = api_gateway.root.add_resource("food_suggestion") # /food_suggestion
+        food_suggestion_resource.add_method("GET")
+        food_suggestion_resource.add_method("PUT")
+        food_suggestion_resource.add_method("DELETE")
+        food_suggestion_resource.add_method("POST")
 
-        # S3 bucket to store the React App
-        frontend_bucket = s3.Bucket(self, "ReactApplicationBucket",
-            access_control=s3.BucketAccessControl.PRIVATE,
-            removal_policy=RemovalPolicy.DESTROY, # for testing purposes, remove for production
+        # Hosted Zone
+        zone = route53.HostedZone.from_lookup(self, "HostedZone",
+            domain_name=domain_name
+        )
+
+        # Medium Create S3 Bucket to store the React App
+        site_bucket = s3.Bucket(self, "SiteBucket", # TODO change to ReactApplicationBucket
+            bucket_name=f'{domain_name}.{domain_name}', # TODO fix this
+            website_index_document="index.html",
+            public_read_access=True,
+            block_public_access=s3.BlockPublicAccess(block_public_acls=False, block_public_policy=False),
+            removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True # for testing purposes, remove for production
         )
 
-        # Create an Origin Access Identity
-        origin_access_identity = cloudfront.OriginAccessIdentity(self, "OriginAccessIdentity")
-
-        # Grant read access to the OAI
-        frontend_bucket.grant_read(origin_access_identity)
-
-        # Create the CloudFront distribution
-        distribution = cloudfront.Distribution(self, "Distribution",
-            default_root_object="index.html",
-            default_behavior={
-                "origin": origins.S3Origin(frontend_bucket, origin_access_identity=origin_access_identity),
-            })
-
-        # Upload the React app to the S3 bucket and invalidate the Cloudfront cache
-        s3_deployment.BucketDeployment(self, "BucketDeployment",
-            destination_bucket=frontend_bucket,
-            sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
-            distribution=distribution,  # Link the distribution to the deployment
-            distribution_paths=["/*"]   # Invalidate all files in the cache
+        # Create Certificate
+        site_certificate = acm.DnsValidatedCertificate(self, "SiteCertificate", # TODO update, DnsValidatedCertificate is depricated
+            domain_name=domain_name,
+            hosted_zone=zone,
+            region="us-east-1"  # standard for ACM certs
         )
 
-        # Output the URLs
-        CfnOutput(self, "CloudFrontURL", value=distribution.domain_name)
-        CfnOutput(self, "ApiUrl", value=api.url)
+        # # Create Certificate
+        # site_certificate = acm.Certificate(self, "SiteCertificate",
+        #     domain_name=f'{subdomain_name}.{domain_name}',
+        #     validation=acm.CertificateValidation.from_dns(zone)
+        # )
+
+        # Create CloudFront Distribution
+        site_distribution = cloudfront.CloudFrontWebDistribution(self, "SiteDistribution",
+            viewer_certificate=cloudfront.ViewerCertificate.from_acm_certificate(
+                certificate=site_certificate,
+                aliases=[domain_name],
+                security_policy=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+            ),
+            origin_configs=[
+                cloudfront.SourceConfiguration(
+                    custom_origin_source=cloudfront.CustomOriginConfig(
+                        domain_name=site_bucket.bucket_website_domain_name,
+                        origin_protocol_policy=cloudfront.OriginProtocolPolicy.HTTP_ONLY
+                    ),
+                    behaviors=[cloudfront.Behavior(is_default_behavior=True)]
+                )
+            ]
+        )
+
+        # Route 53 Alias Records for CloudFront
+        route53.ARecord(self, "AliasRecord",
+            zone=zone,
+            target=route53.RecordTarget.from_alias(targets.CloudFrontTarget(site_distribution)),
+            record_name=domain_name
+        )
+
+        route53.ARecord(self, "AliasRecordWWW",
+            zone=zone,
+            target=route53.RecordTarget.from_alias(targets.CloudFrontTarget(site_distribution)),
+            record_name=f"www.{domain_name}"
+        )
+
+        # Deploy site to S3
+        s3_deployment.BucketDeployment(self, "BucketDeployment",
+            sources=[s3_deployment.Source.asset("../aws-site-frontend/build")],
+            destination_bucket=site_bucket,
+            distribution=site_distribution,
+            distribution_paths=["/*"]
+        )
+
+        # # Output the URLs
+        CfnOutput(self, "ApiUrl", value=api_gateway.url)
+        CfnOutput(self, "ApiResourcePath", value=food_suggestion_resource.path)
+
+
+
+
+
+

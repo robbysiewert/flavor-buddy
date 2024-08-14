@@ -32,7 +32,7 @@ export default class Form extends Component {
 
     // Post data to Lambda function
     await axios.post(
-      `${apiUrl}storage`,
+      `${apiUrl}`,
       {
         identifier: name,
         attribute1: message,
@@ -42,7 +42,7 @@ export default class Form extends Component {
     // Fetch data from Lambda function using GET method
     try {
       const response = await axios.get(
-        `${apiUrl}storage`,
+        `${apiUrl}`,
         {
           params: {
             identifier: name,
