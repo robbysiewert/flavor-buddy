@@ -1,41 +1,95 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Selector.css'; // Ensure you have this CSS file
 
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
-const ItemSelector = () => {
-    const [relatedItems, setRelatedItems] = useState([]);
+const Selector = () => {
+    const [buttonNames, setButtonNames] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const navigate = useNavigate();
 
-    const handleSelection = (category) => {
-        // Call the Lambda function via API Gateway
-        axios.post(`${apiUrl}storage`, { category })
-            .then(response => {
-                setRelatedItems(response.data.body);
-            })
-            .catch(error => {
-                console.error('Error fetching related items:', error);
+    useEffect(() => {
+        // Make the initial POST request
+        const postUserData = async () => {
+            try {
+                await axios.post(`${apiUrl}storage`, { id: 'add_user_data' });
+                console.log('Initial POST request successful');
+            } catch (error) {
+                console.error('Error making initial POST request:', error);
+            }
+        };
+
+        postUserData();
+        fetchButtonNames();
+    }, []);
+
+    const fetchButtonNames = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}storage`, {
+                params: {
+                    requested_item: 'random_food'
+                }
             });
+
+            const { random_item1, random_item2, random_item3 } = response.data;
+            setButtonNames([random_item1, random_item2, random_item3]);
+        } catch (error) {
+            console.error('Error fetching button names:', error);
+        }
+    };
+
+    const handleButtonClick = async (buttonName) => {
+        try {
+            await axios.post(`${apiUrl}storage`, { id: buttonName });
+            setSelectedItems([...selectedItems, buttonName]);
+            fetchButtonNames();
+        } catch (error) {
+            console.error('Error making POST request:', error);
+        }
+    };
+
+    const handleFinishClick = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}storage`, {
+                params: {
+                    requested_item: 'food_suggestions'
+                }
+            });
+
+            const suggestions = response.data;
+            navigate('/suggestions', { state: { suggestions } });
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+        }
     };
 
     return (
-        <div>
-            <h3>Select an item:</h3>
-            <button onClick={() => handleSelection('cupcake')}>Cupcake</button>
-            <button onClick={() => handleSelection('candy')}>Candy</button>
-            <button onClick={() => handleSelection('brownie')}>Brownie</button>
-
-            {relatedItems.length > 0 && (
-                <div>
-                    <h4>Related Items:</h4>
-                    <ul>
-                        {relatedItems.map(item => (
-                            <li key={item.itemId}>{item.name}</li>
-                        ))}
-                    </ul>
-                </div>
+        <div className="selector-container">
+            <div className="instructions">
+                <h1>What are you in the mood for today?</h1>
+                <p>Select at least three items:</p>
+                <p>More selections equals better suggestions!</p>
+            </div>
+            <div className="buttons-container">
+                {buttonNames.length > 0 ? (
+                    buttonNames.map((name, index) => (
+                        <button key={index} onClick={() => handleButtonClick(name)}>
+                            {name}
+                        </button>
+                    ))
+                ) : (
+                    <p>Loading options...</p>
+                )}
+            </div>
+            {selectedItems.length >= 3 && (
+                <button className="finish-button" onClick={handleFinishClick}>
+                    Finish
+                </button>
             )}
         </div>
     );
 };
 
-export default ItemSelector;
+export default Selector;

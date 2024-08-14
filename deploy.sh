@@ -22,7 +22,7 @@ for ((i = 1; i <= DEPLOYMENTS; i++)); do
 
     # Deploy the CDK stack
     echo "Deploying..."
-    cdk deploy
+    cdk deploy --require-approval=never
 
     # Run the script to propagate the API URL
     echo "Propagating API URL..."

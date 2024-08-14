@@ -1,0 +1,46 @@
+/* Selector.css */
+.selector-container {
+    text-align: center; /* Center text and buttons */
+}
+
+.instructions {
+    margin-bottom: 20px; /* Space between instructions and buttons */
+}
+
+.instructions h1 {
+    font-size: 1.8em; /* Larger font size for the heading */
+    margin-bottom: 10px; /* Space below the heading */
+}
+
+.instructions p {
+    font-size: 1.2em; /* Slightly larger font size for paragraphs */
+    margin: 5px 0; /* Space above and below paragraphs */
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 10px; /* Space between buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap to the next line if needed */
+}
+
+.buttons-container button {
+    padding: 10px 20px; /* Padding for buttons */
+    font-size: 1em; /* Font size for buttons */
+}
+
+.finish-button {
+    margin-top: 20px; /* Space above the button */
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding */
+    font-size: 1.2em; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Transition effect */
+}
+
+.finish-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
