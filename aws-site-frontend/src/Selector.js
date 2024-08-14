@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
 const Selector = () => {
     const [buttonNames, setButtonNames] = useState([]);
-    const [selectedFoods, setSelectedFoods] = useState([]);
-    const [suggestions, setSuggestions] = useState(null);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchButtonNames();
+    }, []);
 
     const fetchButtonNames = async () => {
         try {
             const response = await axios.get(`${apiUrl}storage`, {
-                params: { requested_item: 'random_food' }
+                params: {
+                    requested_item: 'random_food'
+                }
             });
 
             const { random_item1, random_item2, random_item3 } = response.data;
@@ -21,14 +28,10 @@ const Selector = () => {
         }
     };
 
-    useEffect(() => {
-        fetchButtonNames();
-    }, []);
-
     const handleButtonClick = async (buttonName) => {
         try {
             await axios.post(`${apiUrl}storage`, { id: buttonName });
-            setSelectedFoods(prevSelectedFoods => [...prevSelectedFoods, buttonName]);
+            setSelectedItems([...selectedItems, buttonName]);
             fetchButtonNames();
         } catch (error) {
             console.error('Error making POST request:', error);
@@ -38,38 +41,31 @@ const Selector = () => {
     const handleFinishClick = async () => {
         try {
             const response = await axios.get(`${apiUrl}storage`, {
-                params: { requested_item: 'food_suggestions' }
+                params: {
+                    requested_item: 'food_suggestions'
+                }
             });
-            console.log(`GET request successful: food_suggestions`);
 
-            const { suggestions } = response.data;
-            setSuggestions(suggestions);
+            const suggestions = response.data;
+            navigate('/suggestions', { state: { suggestions } });
         } catch (error) {
             console.error('Error fetching suggestions:', error);
         }
     };
 
-    if (suggestions) {
-        return (
-            <div>
-                <h2>Suggestions:</h2>
-                <ul>
-                    {suggestions.map((suggestion, index) => (
-                        <li key={index}>{suggestion}</li>
-                    ))}
-                </ul>
-            </div>
-        );
-    }
-
     return (
         <div>
-            {buttonNames.map((name, index) => (
-                <button key={index} onClick={() => handleButtonClick(name)}>
-                    {name}
-                </button>
-            ))}
-            {selectedFoods.length >= 3 && (
+            <h1>What are you in the mood for today?</h1>
+            {buttonNames.length > 0 ? (
+                buttonNames.map((name, index) => (
+                    <button key={index} onClick={() => handleButtonClick(name)}>
+                        {name}
+                    </button>
+                ))
+            ) : (
+                <p>Loading buttons...</p>
+            )}
+            {selectedItems.length >= 3 && (
                 <button onClick={handleFinishClick}>Finish</button>
             )}
         </div>

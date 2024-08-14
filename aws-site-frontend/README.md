@@ -3,6 +3,7 @@
 Install create-react-app
 ```
 $ npm install -g create-react-app
+$ npm install react-router-dom
 ```
 Ensure node and npm are installed
 ```
@@ -21,6 +22,9 @@ Get started locally
 ```
 $ cd aws-site-frontend
 ```
+
+
+
 
 # Getting Started with Create React App
 
