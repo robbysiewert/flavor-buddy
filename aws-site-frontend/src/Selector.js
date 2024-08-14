@@ -9,21 +9,18 @@ const ButtonsPage = () => {
     useEffect(() => {
         const fetchButtonNames = async () => {
             try {
-                // Create an array of promises for calling the Lambda function three times
-                const promises = [
-                    axios.get(`${apiUrl}storage`),
-                    axios.get(`${apiUrl}storage`),
-                    axios.get(`${apiUrl}storage`)
-                ];
+                // Make a single GET request with queryStringParameters
+                const response = await axios.get(`${apiUrl}storage`, {
+                    params: {
+                        requested_item: 'random_food'
+                    }
+                });
 
-                // Wait for all promises to resolve
-                const responses = await Promise.all(promises);
-
-                // Extract messages from responses
-                const names = responses.map(response => response.data.message);
+                // Extract the food names from the response
+                const { random_item1, random_item2, random_item3 } = response.data;
 
                 // Set the button names in state
-                setButtonNames(names);
+                setButtonNames([random_item1, random_item2, random_item3]);
             } catch (error) {
                 console.error('Error fetching button names:', error);
             }
@@ -31,6 +28,7 @@ const ButtonsPage = () => {
 
         fetchButtonNames();
     }, []);
+
 
     // Handler for button click
     const handleButtonClick = async (buttonName) => {

@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <h1>Select an option:</h1>
+        <h1>What are you in the mood for today?</h1>
         <Selector />
       </div>
     );

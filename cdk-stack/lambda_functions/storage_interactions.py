@@ -31,10 +31,9 @@ def handler(event, context):
             logger.info(f'Event body: {body}')
             return post(body)
         elif http_method == 'GET':
-            # query_params = event['queryStringParameters']
-            # logger.info(query_params)
-            # return get(query_params)
-            return get()
+            query_params = event['queryStringParameters']
+            logger.info(query_params)
+            return get(query_params)
         # elif http_method == 'PUT':
         #     return PUT(event.get('key'), event.get('update_expression'), \
         #             event.get('expression_attribute_values'))
@@ -153,9 +152,23 @@ def post_depricated(body: dict) -> dict:
     except Exception as e:
         return format_unsuccessful_response(e)
 
-def get() -> str:
-    # return get_random_food()
-    return get_food_suggestions()
+def get(query_params: dict) -> dict:
+
+    try:
+        requested_item = query_params['requested_item']
+        logger.info(requested_item)
+
+        if requested_item == 'random_food':
+            return get_random_food()
+        elif requested_item == 'food_suggestions':
+            return get_food_suggestions()
+        else:
+            return format_unsuccessful_response("Invalid requested item")
+
+    except ClientError as e:
+        return format_unsuccessful_response(e)
+    except Exception as e:
+        return format_unsuccessful_response(e)
 
 def get_depricated(query_params: dict) -> dict:
     """
@@ -191,6 +204,8 @@ def get_depricated(query_params: dict) -> dict:
             return format_unsuccessful_response('Item not found in table')
     except ClientError as e:
         return format_unsuccessful_response(e)
+    except Exception as e:
+        return format_unsuccessful_response(e)
 
 def delete(body: dict) -> dict:
     """
@@ -220,6 +235,8 @@ def delete(body: dict) -> dict:
         )
         return format_successful_response('Item deleted successfully')
     except ClientError as e:
+        return format_unsuccessful_response(e)
+    except Exception as e:
         return format_unsuccessful_response(e)
 
 # def put(key, update_expression, expression_attribute_values):
@@ -279,18 +296,27 @@ def format_unsuccessful_response(exception) -> dict:
     }
     return response
 
-def get_random_food() -> str:
+def get_random_food() -> dict:
     """Returns a random food item from the 'Foods' table."""
-    # Use the scan operation to retrieve all items from the table
-    response = food_table.scan()
-    # Get the list of items from the response
-    items = response['Items']
-    # Randomly select an item from the list
-    random_item = random.choice(items)
-    logger.info(random_item)
-    logger.info(type(random_item))
-    logger.info(random_item['id'])
-    return format_successful_response({'message': random_item['id']})
+    number_of_food_items_returned = 3
+    try:
+        # Use the scan operation to retrieve all items from the table
+        response = food_table.scan()
+        # Get the list of items from the response
+        foods = response['Items']
+        if len(foods) < number_of_food_items_returned:
+            return format_unsuccessful_response("Not enough food items in the table")
+        # Randomly select an item from the list
+        random_items = random.sample(foods, number_of_food_items_returned)
+        random_item_ids = {}
+        for i, random_item in enumerate(random_items, start=1):
+            logger.info(random_item['id'])
+            random_item_ids[f'random_item{i}'] = random_item['id']
+        return format_successful_response(random_item_ids)
+    except ClientError as e:
+        return format_unsuccessful_response(e)
+    except Exception as e:
+        return format_unsuccessful_response(e)
 
 
 def get_food_suggestions():
@@ -331,10 +357,10 @@ def get_food_suggestions():
         sorted_suggestions = sorted(suggestions, key=lambda x: x[1], reverse=True)
 
         # Convert sorted list into a ranked dictionary
-        ranked_suggestions = {food: rank + 1 for rank, (food, _) in enumerate(sorted_suggestions)}
+        # ranked_suggestions = {food: rank + 1 for rank, (food, _) in enumerate(sorted_suggestions)}
+        ranked_suggestions = {rank + 1: food for rank, (food, _) in enumerate(sorted_suggestions)}
 
         logger.info(ranked_suggestions)
-
 
         # Return the food items with the highest scores
         return format_successful_response(ranked_suggestions)
@@ -347,7 +373,7 @@ def get_food_from_user(target_user_attribute):
     """
     Reverse the map_food_to_user dict
     """
-  
+
     for food_attribute, user_attribute in map_food_to_user.items():
         if target_user_attribute == user_attribute:
             return food_attribute
