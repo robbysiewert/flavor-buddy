@@ -20,16 +20,21 @@ p {
 }
 
 .continue-button {
-    background-color: #007bff; /* Blue background */
-    color: white; /* White text */
-    border: none; /* Remove border */
+    padding: 10px 20px; /* Padding for buttons */
+    font-size: 1em; /* Font size for buttons */
+    background-color: #f0f0f0; /* Very light grey background */
+    border: 1px solid #ddd; /* Light grey border */
     border-radius: 5px; /* Rounded corners */
-    padding: 10px 20px; /* Padding */
-    font-size: 1.2em; /* Font size */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Transition effect */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Default shadow */
+    transition: box-shadow 0.1s, background-color 0.1s; /* Transition effects */
 }
 
+/* Glow effect on hover */
 .continue-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.15); /* Glow effect on hover */
+}
+
+/* Background color and shadow effect on click */
+.continue-button:active {
+    background-color: #e0e0e0; /* Slightly darker grey on click */
 }

@@ -1,15 +1,20 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './SuggestionsPage.css'; // Import your custom CSS
 
 const SuggestionsPage = () => {
     const { state } = useLocation();
     const { suggestions } = state || {};
+    const navigate = useNavigate();
 
     // Sort suggestions by rank
     const sortedSuggestions = Object.entries(suggestions || {}).sort(
         ([rankA], [rankB]) => parseInt(rankA) - parseInt(rankB)
     );
+
+    const handleTryAgain = () => {
+        navigate('/selector');
+    };
 
     return (
         <div className="suggestions-container">
@@ -24,6 +29,9 @@ const SuggestionsPage = () => {
                     </li>
                 ))}
             </ul>
+            <button onClick={handleTryAgain} className="try-again-button">
+                Try Again
+            </button>
         </div>
     );
 };

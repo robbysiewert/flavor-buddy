@@ -1,13 +1,29 @@
 // WelcomePage.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './WelcomePage.css'; // Import your custom CSS
+
+const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
 const WelcomePage = () => {
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const postUserData = async () => {
+            try {
+                await axios.post(`${apiUrl}`, { id: 'add_user_data' });
+                console.log('User reset successful');
+            } catch (error) {
+                console.error('Error making initial POST request:', error);
+            }
+        };
+
+        postUserData();
+    }, []); // Empty dependency array to run only on component mount
+
     const handleContinue = () => {
-        navigate('/selector'); // Replace '/selector' with the route to your main content page
+        navigate('/selector');
     };
 
     return (

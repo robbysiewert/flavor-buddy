@@ -5,16 +5,19 @@
 
 .instructions {
     margin-bottom: 20px; /* Space between instructions and buttons */
+    font-family: Arial, sans-serif;
 }
 
 .instructions h1 {
     font-size: 1.8em; /* Larger font size for the heading */
     margin-bottom: 10px; /* Space below the heading */
+    font-family: Arial, sans-serif;
 }
 
 .instructions p {
     font-size: 1.2em; /* Slightly larger font size for paragraphs */
     margin: 5px 0; /* Space above and below paragraphs */
+    font-family: Arial, sans-serif;
 }
 
 .buttons-container {
@@ -22,25 +25,34 @@
     justify-content: center; /* Center buttons horizontally */
     gap: 10px; /* Space between buttons */
     flex-wrap: wrap; /* Allow buttons to wrap to the next line if needed */
+    font-family: Arial, sans-serif;
 }
 
-.buttons-container button {
+.actions-container {
+    margin-top: 20px; /* Space above action buttons */
+    display: flex;
+    justify-content: center; /* Center action buttons horizontally */
+    gap: 10px; /* Space between action buttons */
+    font-family: Arial, sans-serif;
+
+}
+
+.buttons-container button, .actions-container button {
     padding: 10px 20px; /* Padding for buttons */
     font-size: 1em; /* Font size for buttons */
-}
-
-.finish-button {
-    margin-top: 20px; /* Space above the button */
-    background-color: #007bff; /* Blue background */
-    color: white; /* White text */
-    border: none; /* Remove border */
+    background-color: #f0f0f0; /* Very light grey background */
+    border: 1px solid #ddd; /* Light grey border */
     border-radius: 5px; /* Rounded corners */
-    padding: 10px 20px; /* Padding */
-    font-size: 1.2em; /* Font size */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Transition effect */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Default shadow */
+    transition: box-shadow 0.1s, background-color 0.1s; /* Transition effects */
 }
 
-.finish-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+/* Glow effect on hover */
+.buttons-container button:hover, .actions-container button:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.15); /* Glow effect on hover */
+}
+
+/* Background color and shadow effect on click */
+.buttons-container button:active, .actions-container button:active {
+    background-color: #e0e0e0; /* Slightly darker grey on click */
 }

@@ -1,45 +1,64 @@
-.suggestions-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
-    text-align: center;
-    font-family: Arial, sans-serif;
-}
+    .suggestions-container {
+        padding: 20px;
+        max-width: 800px;
+        margin: auto;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
 
-h1 {
-    font-size: 2em;
-    color: #333;
-    margin-bottom: 20px;
-}
+    h1 {
+        font-size: 2em;
+        color: #333;
+        margin-bottom: 20px;
+        font-family: Arial, sans-serif;
+    }
 
-.suggestions-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+    .suggestions-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
 
-.suggestion-item {
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s;
-}
+    .suggestion-item {
+        background-color: #f0f0f0; /* Very light grey background */
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px 20px; /* Padding for buttons */
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background-color 0.3s;
+        font-size: 1em; /* Font size for buttons */
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Default shadow */
+    }
 
-.top-suggestion {
-    background-color: #e0e0e0; /* Lighter grey background */
-    color: #333; /* Darker text color for contrast */
-    font-weight: normal; /* Normal font weight */
-    border: 2px solid #b0b0b0; /* Lighter grey border */
-    font-size: 1.2em; /* Slightly larger font size */
-}
+    .top-suggestion {
+        background-color: rgba(0, 0, 0, 0.15); /* Lighter grey background */
+        color: #020000; /* Darker text color for contrast */
+        font-weight: normal; /* Normal font weight */
+        border: 1px solid #b0b0b0; /* Lighter grey border */
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Default shadow */
+    }
 
 
+    .try-again-button {
+        padding: 10px 20px; /* Padding for buttons */
+        font-size: 1em; /* Font size for buttons */
+        background-color: #f0f0f0; /* Very light grey background */
+        border: 1px solid #ddd; /* Light grey border */
+        border-radius: 5px; /* Rounded corners */
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Default shadow */
+        transition: box-shadow 0.1s, background-color 0.1s; /* Transition effects */
+    }
 
-.suggestion-item:not(.top-suggestion):hover {
-    background-color: #e0e0e0;
-}
+    /* Glow effect on hover */
+    .try-again-button:hover {
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.15); /* Glow effect on hover */
+    }
+
+    /* Background color and shadow effect on click */
+    .try-again-button:active {
+        background-color: #e0e0e0; /* Slightly darker grey on click */
+    }

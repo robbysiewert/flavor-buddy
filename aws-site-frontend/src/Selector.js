@@ -11,17 +11,6 @@ const Selector = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Make the initial POST request
-        const postUserData = async () => {
-            try {
-                await axios.post(`${apiUrl}`, { id: 'add_user_data' });
-                console.log('Initial POST request successful');
-            } catch (error) {
-                console.error('Error making initial POST request:', error);
-            }
-        };
-
-        postUserData();
         fetchButtonNames();
     }, []);
 
@@ -84,11 +73,16 @@ const Selector = () => {
                     <p>Loading options...</p>
                 )}
             </div>
-            {selectedItems.length >= 3 && (
-                <button className="finish-button" onClick={handleFinishClick}>
-                    Finish
+            <div className="actions-container">
+                <button onClick={fetchButtonNames}>
+                    Skip
                 </button>
-            )}
+                {selectedItems.length >= 3 && (
+                    <button onClick={handleFinishClick}>
+                        Finish
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
