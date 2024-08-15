@@ -3,14 +3,14 @@ import boto3
 # Initialize the Boto3 CloudFormation client
 client = boto3.client('cloudformation')
 
-response = client.describe_stacks(StackName='CdkStackStack')
+cf_stack = client.describe_stacks(StackName='CdkStackStack')
 
 # Initialize variables to hold the outputs
 api_gateway_url = None
 api_resource_path = None
 
 # Extract the URL and resource path from the stack outputs
-for output in response['Stacks'][0]['Outputs']:
+for output in cf_stack['Stacks'][0]['Outputs']:
     if output['OutputKey'] == 'ApiUrl':
         api_gateway_url = output['OutputValue']
     elif output['OutputKey'] == 'ApiResourcePath':
