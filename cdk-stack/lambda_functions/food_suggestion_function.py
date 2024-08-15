@@ -51,60 +51,25 @@ def post(body: dict) -> dict:
 
     try: # TODO reduce size of try catch chunks
 
-        id = body['id']
+        food_id = body['id']
         # Temporary solution to add data to the tables
-        if id == 'add_user_data':
+        if food_id == 'add_user_data':
             logger.info('Calling add_user_data()')
             add_user_data()
             return format_successful_response({'message': 'Success'})
-        if id == 'add_food_data':
+        elif food_id == 'add_food_data':
             logger.info('Calling add_food_data()')
             add_food_data()
             return format_successful_response({'message': 'Success'})
-        logger.info(f'id: {id}')
-        dynamodb_response = food_table.get_item(
-            Key={
-                'id': id
-            }
-        )
-        if 'Item' in dynamodb_response:
-            food = dynamodb_response['Item']
+
+        logger.info("User prefers %s", food_id)
+        food_item_response = food_table.get_item(Key={'id': food_id})
+        if 'Item' in food_item_response:
+            food = food_item_response['Item']
             logger.info("Food:")
             logger.info(food.items())
 
-            # Initialize parts of the update expression and expression attribute values
-            update_expression = "SET "
-            expression_attribute_values = {}
-
-            for attribute, val in food.items():
-                if attribute == "id" or not val:
-                    continue
-
-                logger.info(f'{attribute}: {val}')
-                user_attribute = map_food_to_user.get(attribute)
-                if user_attribute:
-                    logger.info(f'user_attribute: {user_attribute}')
-                    # Append to the update expression
-                    update_expression += f'{user_attribute} = {user_attribute} + :increment, '
-                    expression_attribute_values[':increment'] = 1
-
-            # Remove the trailing comma and space from the update expression
-            update_expression = update_expression.rstrip(', ')
-
-            # Perform the update only if there are attributes to update
-            if expression_attribute_values:
-                user_id = 'User123'
-                response = user_table.update_item(
-                    Key={'id': user_id},
-                    UpdateExpression=update_expression,
-                    ExpressionAttributeValues=expression_attribute_values,
-                    ReturnValues='UPDATED_NEW'
-                )
-                logger.info("Update response:")
-                logger.info(response)
-            else:
-                logger.info("No attributes to update.")
-            return format_successful_response({'message': 'Success'})
+        return update_user_preferences(food)
     except ClientError as e:
         return format_unsuccessful_response(e)
     except Exception as e:
@@ -322,19 +287,65 @@ def get_random_food() -> dict:
         return format_unsuccessful_response(e)
     except Exception as e:
         return format_unsuccessful_response(e)
-
-
-def get_food_suggestions():
-
+def update_user_preferences(food: dict) -> dict:
+    """
+    Update the user's preferences in the User table based on the food item.
+    """
     try:
-        # assuming the function calling this function will return the response from this function
+        # Initialize parts of the update expression and expression attribute values
+        update_expression = "SET "
+        expression_attribute_values = {}
 
-        # Get the user preferences
+        for attribute, val in food.items():
+            if attribute == "id" or not val:
+                continue
+
+            logger.info('%s: %s', attribute, val)
+            user_attribute = map_food_to_user.get(attribute)
+            if user_attribute:
+                logger.info('user_attribute: %s', user_attribute)
+                # Append to the update expression
+                update_expression += f'preferences.{user_attribute} = preferences.{user_attribute} + :increment, '
+                expression_attribute_values[':increment'] = 1
+
+        # Append the food ID to selectedFoods
+        food_id = food.get('id')
+        if food_id:
+            update_expression += "selectedFoods = list_append(selectedFoods, :food_id), "
+            expression_attribute_values[':food_id'] = [food["id"]]
+
+        # Remove the trailing comma and space from the update expression
+        update_expression = update_expression.rstrip(', ')
+
+        # Perform the update only if there are attributes to update
+        if expression_attribute_values:
+            user_id = 'User123'
+            response = user_table.update_item(
+                Key={'id': user_id},
+                UpdateExpression=update_expression,
+                ExpressionAttributeValues=expression_attribute_values,
+                ReturnValues='UPDATED_NEW'
+            )
+            logger.info("Update response:")
+            logger.info(response)
+        else:
+            logger.info("No attributes to update.")
+        return format_successful_response({'message': 'Success'})
+    except ClientError as e:
+        return format_unsuccessful_response(e)
+    except Exception as e:
+        return format_unsuccessful_response(e)
+def get_food_suggestions():
+    try:
+        # Get the user preferences and selected foods
         user_id = 'User123'
         user_item = user_table.get_item(Key={'id': user_id}).get('Item', {})
 
         if not user_item:
             return format_unsuccessful_response(f"User with id {user_id} not found.")
+
+        preferences = user_item.get('preferences', {})
+        selected_foods = user_item.get('selectedFoods', [])
 
         # Get all food items
         food_items = food_table.scan().get('Items', [])
@@ -345,16 +356,18 @@ def get_food_suggestions():
         suggestions = []
 
         for food_item in food_items:
+            if food_item['id'] in selected_foods:
+                continue  # Skip already selected foods
+
             score = 0
 
-            for user_attr, user_weight in user_item.items():
-                if user_attr == 'id' or user_weight == 0:
+            for user_attr, user_weight in preferences.items():
+                if user_weight == 0:
                     continue
 
                 food_attr = get_food_from_user(user_attr)
                 if food_attr and food_item.get(food_attr):
                     score += user_weight
-                # logger.info(food_item['id'], score)
 
             suggestions.append((food_item['id'], score))
 
