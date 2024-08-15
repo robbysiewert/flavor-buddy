@@ -5,6 +5,8 @@ import boto3
 from botocore.exceptions import ClientError
 import logging
 import random
+import math
+
 
 # Set up logging
 logger = logging.getLogger()
@@ -287,6 +289,8 @@ def get_random_food() -> dict:
         return format_unsuccessful_response(e)
     except Exception as e:
         return format_unsuccessful_response(e)
+###############################################
+
 def update_user_preferences(food: dict) -> dict:
     """
     Update the user's preferences in the User table based on the food item.
@@ -312,7 +316,7 @@ def update_user_preferences(food: dict) -> dict:
         food_id = food.get('id')
         if food_id:
             update_expression += "selectedFoods = list_append(selectedFoods, :food_id), "
-            expression_attribute_values[':food_id'] = [food["id"]]
+            expression_attribute_values[':food_id'] = [food_id]
 
         # Remove the trailing comma and space from the update expression
         update_expression = update_expression.rstrip(', ')
@@ -335,8 +339,10 @@ def update_user_preferences(food: dict) -> dict:
         return format_unsuccessful_response(e)
     except Exception as e:
         return format_unsuccessful_response(e)
+
 def get_food_suggestions():
     try:
+        number_of_suggestions = 3
         # Get the user preferences and selected foods
         user_id = 'User123'
         user_item = user_table.get_item(Key={'id': user_id}).get('Item', {})
@@ -372,13 +378,10 @@ def get_food_suggestions():
             suggestions.append((food_item['id'], score))
 
         # Sort the suggestions by score in descending order
-        sorted_suggestions = sorted(suggestions, key=lambda x: x[1], reverse=True)
-
-        # Take only the top three items
-        top_three_suggestions = sorted_suggestions[:3]
+        sorted_suggestions = sorted(suggestions, key=lambda x: x[1], reverse=True)[:number_of_suggestions] # slice of top suggestions only
 
         # Convert sorted list into a ranked dictionary
-        ranked_suggestions = {rank + 1: food for rank, (food, _) in enumerate(top_three_suggestions)}
+        ranked_suggestions = {rank + 1: food for rank, (food, _) in enumerate(sorted_suggestions)}
 
         logger.info(ranked_suggestions)
 
@@ -389,11 +392,81 @@ def get_food_suggestions():
     except Exception as e:
         return format_unsuccessful_response(e)
 
+def normalize_vector(vector):
+    """
+    Normalize a vector to have unit length.
+    """
+    norm = math.sqrt(sum(x ** 2 for x in vector))
+    return [x / norm for x in vector] if norm > 0 else vector
+
+def cosine_similarity(vec1, vec2):
+    """
+    Calculate cosine similarity between two vectors.
+    """
+    dot_product = sum(a * b for a, b in zip(vec1, vec2))
+    norm1 = math.sqrt(sum(a ** 2 for a in vec1))
+    norm2 = math.sqrt(sum(b ** 2 for b in vec2))
+    return dot_product / (norm1 * norm2) if norm1 > 0 and norm2 > 0 else 0
+
+def get_food_suggestions_test():
+    try:
+        number_of_suggestions = 3
+        user_id = 'User123'
+        user_item = user_table.get_item(Key={'id': user_id}).get('Item', {})
+
+        if not user_item:
+            return format_unsuccessful_response(f"User with id {user_id} not found.")
+
+        preferences = user_item.get('preferences', {})
+        selected_foods = set(user_item.get('selectedFoods', []))
+
+        food_items = food_table.scan().get('Items', [])
+        if not food_items:
+            return format_unsuccessful_response("No food items found.")
+
+        # Normalize user preferences
+        preference_values = list(preferences.values())
+        if sum(preference_values) > 0:
+            normalized_preferences = normalize_vector(preference_values)
+        else:
+            normalized_preferences = preference_values
+
+        suggestions = []
+
+        for food_item in food_items:
+            if food_item['id'] in selected_foods:
+                continue  # Skip already selected foods
+
+            food_vector = []
+            for user_attr in preferences.keys():
+                food_attr = get_food_from_user(user_attr)
+                food_vector.append(food_item.get(food_attr, 0))
+
+            # Normalize food vector
+            normalized_food_vector = normalize_vector(food_vector)
+
+            # Cosine similarity calculation
+            similarity_score = cosine_similarity(normalized_preferences, normalized_food_vector)
+            suggestions.append((food_item['id'], similarity_score))
+
+        sorted_suggestions = sorted(suggestions, key=lambda x: x[1], reverse=True)[:number_of_suggestions]
+
+        ranked_suggestions = {rank + 1: food for rank, (food, _) in enumerate(sorted_suggestions)}
+
+        logger.info(ranked_suggestions)
+
+        return format_successful_response(ranked_suggestions)
+    except ClientError as e:
+        return format_unsuccessful_response(e)
+    except Exception as e:
+        return format_unsuccessful_response(e)
+
+
+########################################################
 def get_food_from_user(target_user_attribute):
     """
     Reverse the map_food_to_user dict
     """
-
     for food_attribute, user_attribute in map_food_to_user.items():
         if target_user_attribute == user_attribute:
             return food_attribute

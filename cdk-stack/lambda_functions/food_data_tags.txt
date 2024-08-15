@@ -1,0 +1,151 @@
+Vanilla Ice Cream
+Blackened Salmon
+Mango Smoothie
+BBQ Ribs
+Fettuccine Alfredo
+Greek Salad
+Chocolate Brownie
+Chicken Curry
+French Fries
+[
+    {
+        "id": "Chocolate Cake",
+        "categories": ["dessert", "sweet"],
+        "tags": ["chocolate", "sweet", "rich", "indulgent", "creamy", "baked", "luxury", "comfortFood", "holiday"],
+        "averageRating": 4.5,
+        "popularity": 78
+    },
+    {
+        "id": "Grilled Chicken",
+        "categories": ["main course", "grilled"],
+        "tags": ["savory", "smoky", "highProtein", "healthy", "grilled", "lowCarb", "glutenFree", "comfortFood", "quickMeal"],
+        "averageRating": 4.3,
+        "popularity": 82
+    },
+    {
+        "id": "Caesar Salad",
+        "categories": ["salad", "appetizer"],
+        "tags": ["crunchy", "creamy", "healthy", "savory", "fresh", "Italian", "vegetarian", "quickMeal", "light"],
+        "averageRating": 4.2,
+        "popularity": 74
+    },
+    {
+        "id": "Vegetable Stir-Fry",
+        "categories": ["main course", "vegetarian"],
+        "tags": ["spicy", "healthy", "vegan", "crunchy", "Asian", "quickMeal", "lowCarb", "glutenFree", "fresh"],
+        "averageRating": 4.4,
+        "popularity": 79
+    },
+    {
+        "id": "Margherita Pizza",
+        "categories": ["main course", "pizza"],
+        "tags": ["cheesy", "savory", "Italian", "comfortFood", "baked", "vegetarian", "classic", "rich", "satisfying"],
+        "averageRating": 4.6,
+        "popularity": 85
+    },
+    {
+        "id": "Apple Pie",
+        "categories": ["dessert", "baked"],
+        "tags": ["sweet", "fruity", "comfortFood", "holiday", "classic", "warm", "spiced", "rich", "homemade"],
+        "averageRating": 4.7,
+        "popularity": 88
+    },
+    {
+        "id": "Spaghetti Carbonara",
+        "categories": ["main course", "pasta"],
+        "tags": ["cheesy", "creamy", "Italian", "comfortFood", "rich", "savory", "classic", "hearty", "meaty"],
+        "averageRating": 4.5,
+        "popularity": 80
+    },
+    {
+        "id": "Greek Yogurt with Honey",
+        "categories": ["snack", "dessert"],
+        "tags": ["sweet", "creamy", "healthy", "dairy", "quickMeal", "light", "refreshing", "proteinRich", "natural"],
+        "averageRating": 4.3,
+        "popularity": 76
+    },
+    {
+        "id": "Chicken Tacos",
+        "categories": ["main course", "Mexican"],
+        "tags": ["savory", "spicy", "comfortFood", "quickMeal", "Mexican", "fresh", "tender", "customizable", "popular"],
+        "averageRating": 4.4,
+        "popularity": 81
+    },
+    {
+        "id": "Tomato Basil Soup",
+        "categories": ["soup", "appetizer"],
+        "tags": ["savory", "creamy", "comfortFood", "vegetarian", "classic", "tomato", "light", "warm", "healthy"],
+        "averageRating": 4.2,
+        "popularity": 73
+    },
+    {
+        "id": "Beef Stroganoff",
+        "categories": ["main course", "beef"],
+        "tags": ["creamy", "savory", "hearty", "classic", "comfortFood", "rich", "hearty", "meaty", "Russian"],
+        "averageRating": 4.5,
+        "popularity": 77
+    },
+    {
+        "id": "Pad Thai",
+        "categories": ["main course", "Thai"],
+        "tags": ["spicy", "sweet", "savory", "Asian", "vegetarian", "tender", "fresh", "noodles", "authentic"],
+        "averageRating": 4.4,
+        "popularity": 83
+    },
+    {
+        "id": "Buffalo Wings",
+        "categories": ["appetizer", "snack"],
+        "tags": ["spicy", "savory", "comfortFood", "fried", "partyFood", "hot", "crispy", "American", "popular"],
+        "averageRating": 4.3,
+        "popularity": 78
+    },
+    {
+        "id": "Quiche Lorraine",
+        "categories": ["main course", "baked"],
+        "tags": ["savory", "creamy", "baked", "French", "comfortFood", "cheesy", "rich", "hearty", "classic"],
+        "averageRating": 4.6,
+        "popularity": 75
+    },
+    {
+        "id": "Falafel Wrap",
+        "categories": ["main course", "Middle Eastern"],
+        "tags": ["vegan", "savory", "spicy", "healthy", "fresh", "wrap", "comfortFood", "crunchy", "vegetarian"],
+        "averageRating": 4.4,
+        "popularity": 80
+    },
+    {
+        "id": "Lemon Meringue Pie",
+        "categories": ["dessert", "baked"],
+        "tags": ["sweet", "tart", "creamy", "light", "refreshing", "baked", "classic", "lemon", "dessert"],
+        "averageRating": 4.7,
+        "popularity": 77
+    },
+    {
+        "id": "Pulled Pork Sandwich",
+        "categories": ["main course", "American"],
+        "tags": ["savory", "spicy", "comfortFood", "slowCooked", "hearty", "tender", "classic", "American", "popular"],
+        "averageRating": 4.5,
+        "popularity": 82
+    },
+    {
+        "id": "Ratatouille",
+        "categories": ["main course", "vegetarian"],
+        "tags": ["savory", "vegetarian", "healthy", "French", "vegetable", "comfortFood", "hearty", "fresh", "authentic"],
+        "averageRating": 4.3,
+        "popularity": 72
+    },
+    {
+        "id": "Cheesecake",
+        "categories": ["dessert", "sweet"],
+        "tags": ["creamy", "rich", "sweet", "indulgent", "classic", "baked", "luxury", "comfortFood", "dessert"],
+        "averageRating": 4.6,
+        "popularity": 85
+    },
+    {
+        "id": "Shrimp Scampi",
+        "categories": ["main course", "seafood"],
+        "tags": ["savory", "garlicky", "Italian", "seafood", "quickMeal", "fresh", "hearty", "classic", "popular"],
+        "averageRating": 4.4,
+        "popularity": 78
+    }
+]
