@@ -361,13 +361,15 @@ def get_food_suggestions():
         # Sort the suggestions by score in descending order
         sorted_suggestions = sorted(suggestions, key=lambda x: x[1], reverse=True)
 
+        # Take only the top three items
+        top_three_suggestions = sorted_suggestions[:3]
+
         # Convert sorted list into a ranked dictionary
-        # ranked_suggestions = {food: rank + 1 for rank, (food, _) in enumerate(sorted_suggestions)}
-        ranked_suggestions = {rank + 1: food for rank, (food, _) in enumerate(sorted_suggestions)}
+        ranked_suggestions = {rank + 1: food for rank, (food, _) in enumerate(top_three_suggestions)}
 
         logger.info(ranked_suggestions)
 
-        # Return the food items with the highest scores
+        # Return the top three food items with the highest scores
         return format_successful_response(ranked_suggestions)
     except ClientError as e:
         return format_unsuccessful_response(e)
