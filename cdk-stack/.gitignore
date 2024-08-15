@@ -10,5 +10,6 @@ __pycache__
 cdk.out
 cdk.contect.json
 lambda_layer
+lambda_layer.zip
 
 domain_name.txt
