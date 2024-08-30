@@ -1,27 +1,25 @@
 #!/usr/bin/env python3
-
 import aws_cdk as cdk
-
 from cdk_stack.cdk_stack_stack import CdkStackStack
-
+from cdk_stack.pipeline_stack import CicdPipelineStack
 
 app = cdk.App()
-CdkStackStack(app, "CdkStackStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+# CI/CD pipeline stack
+CicdPipelineStack(app, "CicdPipelineStack",
+    code_star_id="8e417a13-4164-4ce4-b1bf-deb77c7c6018",
+    )
 
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+# Application PreProd stack
+CdkStackStack(app, "PreProdApplicationStack",
+    environment="PreProd",
+    env=cdk.Environment(account='021891619017', region='us-west-2')
+    )
 
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    env=cdk.Environment(account='021891619017', region='us-west-2'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+# Application Prod stack
+CdkStackStack(app, "ProApplicationStack",
+    environment="Prod",
+    env=cdk.Environment(account='021891619017', region='us-west-2')
     )
 
 app.synth()
