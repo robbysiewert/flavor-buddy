@@ -1,0 +1,31 @@
+/* Navbar.css */
+.navbar {
+    padding: 15px;
+    position: fixed; /* Keeps the navbar at the top */
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+    border-bottom: 2px solid #ffffff; /* Adds a white bottom border */
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.navbar-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-link {
+    color: #ffffff; /* White text for contrast */
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
+    color: #00ffcc; /* Change text color on hover */
+}
