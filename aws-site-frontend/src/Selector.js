@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './Selector.css'; // Ensure you have this CSS file
+import './Selector.css';
+import Navbar from './Navbar';
 
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
@@ -57,10 +58,12 @@ const Selector = () => {
     };
 
     return (
+        <div>
+        <Navbar />
         <div className="selector-container">
             <div className="instructions">
-                <h1>What are you in the mood for today?</h1>
-                <p>Select at least three items. More selections equal better suggestions!</p>
+                <h1>Pick your favorites</h1>
+                <p>Select at least three items</p>
             </div>
             <div className="buttons-container">
                 {buttonNames.length > 0 ? (
@@ -83,6 +86,7 @@ const Selector = () => {
                     </button>
                 )}
             </div>
+        </div>
         </div>
     );
 };

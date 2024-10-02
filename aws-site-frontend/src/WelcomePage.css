@@ -24,14 +24,14 @@ body {
     font-family: 'Helvetica Neue', sans-serif; /* Clean sans-serif font */
     background: linear-gradient(45deg, #039c78, #040404, #039c78);
     background-size: 300% 500%;
-    animation: triangleAnimation 10s ease infinite;
+    animation: triangleAnimation 5s ease infinite;
     /* animation: triangleAnimation 20s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; */
 }
 
 .welcome-container {
     padding: 20px;
     max-width: 800px;
-    margin: 50px auto 0; /* Adds space at the top */
+    margin: 50px auto; /* Adds space at the top */
     text-align: center;
 }
 
@@ -40,9 +40,7 @@ h1 {
     font-weight: 700;
     color: #00ffcc;
     margin-bottom: 20px;
-    font-family: 'Helvetica Neue', sans-serif; /* Clean sans-serif font */
-
-
+    font-family: 'Helvetica Neue', sans-serif;
 }
 
 p {
