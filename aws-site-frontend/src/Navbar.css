@@ -8,6 +8,7 @@
     /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
     border-bottom: 1px solid #ffffff; /* Adds a white bottom border */
     font-family: 'Helvetica Neue', sans-serif;
+    transition: transform 0.3s ease-in-out;
 }
 
 .navbar-list {
@@ -30,3 +31,9 @@
 .navbar-link:hover {
     color: #00ffcc; /* Change text color on hover */
 }
+
+.hide {
+    transform: translateY(-100%);
+}
+
+

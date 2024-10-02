@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Selector.css';
-import Navbar from './Navbar';
 
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
@@ -58,8 +57,6 @@ const Selector = () => {
     };
 
     return (
-        <div>
-        <Navbar />
         <div className="selector-container">
             <div className="instructions">
                 <h1>Pick your favorites</h1>
@@ -86,7 +83,6 @@ const Selector = () => {
                     </button>
                 )}
             </div>
-        </div>
         </div>
     );
 };
