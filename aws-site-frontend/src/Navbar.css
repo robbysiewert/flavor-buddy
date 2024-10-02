@@ -1,20 +1,21 @@
 /* Navbar.css */
 .navbar {
-    padding: 15px;
+    padding: 10px;
     position: fixed; /* Keeps the navbar at the top */
     width: 100%;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
-    border-bottom: 2px solid #ffffff; /* Adds a white bottom border */
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
+    border-bottom: 1px solid #ffffff; /* Adds a white bottom border */
     font-family: 'Helvetica Neue', sans-serif;
 }
 
 .navbar-list {
     list-style: none;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     margin: 0;
+    margin-right: 10px;
     padding: 0;
 }
 
