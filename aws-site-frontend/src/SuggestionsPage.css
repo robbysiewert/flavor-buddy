@@ -1,69 +1,61 @@
 .suggestions-container {
     padding: 20px;
-    max-width: 800px;
-    margin: 50px auto; /* Adds space at the top */
+    max-width: 90%; /* Responsive width */
+    margin: 50px auto;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-h1 {
-    font-size: 3em;
-    font-weight: 700;
+.suggestions-container h1 {
+    font-size: 2.5em; /* Smaller font size for smaller screens */
+    font-weight: 400;
     color: #00ffcc;
     margin-bottom: 20px;
     font-family: 'Helvetica Neue', sans-serif;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
-
 
 
 .suggestions-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    font-family: 'Helvetica Neue', sans-serif;
+    width: 100%;
+    max-width: 600px; /* More flexible max-width */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
 }
 
 .suggestion-item {
-    background-color: #f0f0f0; /* Very light grey background */
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px 20px; /* Padding for buttons */
-    margin-bottom: 10px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.3s;
-    font-size: 1em; /* Font size for buttons */
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Default shadow */
-}
-
-.top-suggestion {
-    background-color: rgba(0, 0, 0, 0.15); /* Lighter grey background */
-    color: #020000; /* Darker text color for contrast */
-    font-weight: normal; /* Normal font weight */
-    border: 1px solid #b0b0b0; /* Lighter grey border */
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Default shadow */
+    font-size: 1.2em;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    color: #040404;
+    cursor: pointer;
+    box-shadow: 0px 8px 15px rgba(0, 255, 204, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .try-again-button {
+    margin-top: 30px;
     padding: 10px 20px;
-    font-size: 1.5em;
-    background-color: #00ffcc; /* Vibrant button color */
-    color: #040404; /* Dark text for contrast */
+    font-size: 1.2em;
+    background-color: #00ffcc;
+    color: #040404;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     box-shadow: 0px 5px 15px rgba(0, 255, 204, 0.3);
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    font-family: 'Helvetica Neue', sans-serif;
-}
-
-.try-again-button:hover {
-    background-color: #00ffcc; /* Aqua blue */
-    transform: scale(1.05); /* Slightly enlarge button */
-    box-shadow: 0px 0px 15px rgba(0, 255, 204, 0.6); /* Glow effect */
-}
-
-.try-again-button:active {
-    background-color: #00ffcc; /* Aqua blue */
-    transform: scale(0.98); /* Button slightly shrinks */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }

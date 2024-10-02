@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './WelcomePage.css';
-import Navbar from './Navbar';
 
 const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 
@@ -28,8 +27,6 @@ const WelcomePage = () => {
     };
 
     return (
-        <div>
-            <Navbar /> {/* Add the Navbar at the top */}
             <div className="welcome-container">
                 <h1>Hi, I'm Flavor Buddy</h1>
                 <p>Select your favorite foods, and I'll suggest the top choices for you to try</p>
@@ -37,7 +34,6 @@ const WelcomePage = () => {
                     Continue
                 </button>
             </div>
-        </div>
     );
 };
 

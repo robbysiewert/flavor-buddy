@@ -1,7 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './SuggestionsPage.css'; // Import your custom CSS
-import Navbar from './Navbar';
 
 const SuggestionsPage = () => {
     const { state } = useLocation();
@@ -18,8 +17,6 @@ const SuggestionsPage = () => {
     };
 
     return (
-        <div>
-        <Navbar />
         <div className="suggestions-container">
             <h1>Recomendations:</h1>
             <ul className="suggestions-list">
@@ -35,7 +32,6 @@ const SuggestionsPage = () => {
             <button onClick={handleTryAgain} className="try-again-button">
                 Try Again
             </button>
-        </div>
         </div>
     );
 };
