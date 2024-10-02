@@ -21,7 +21,7 @@ const SuggestionsPage = () => {
         <div>
         <Navbar />
         <div className="suggestions-container">
-            <h1>Suggested dishes based on your choices:</h1>
+            <h1>Recomendations:</h1>
             <ul className="suggestions-list">
                 {sortedSuggestions.map(([_, food], index) => (
                     <li
