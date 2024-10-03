@@ -1,6 +1,6 @@
 .suggestions-container {
     padding: 20px;
-    max-width: 90%; /* Responsive width */
+    max-width: 90%;
     margin: 50px auto;
     text-align: center;
     display: flex;
@@ -10,7 +10,7 @@
 }
 
 .suggestions-container h1 {
-    font-size: 2.5em; /* Smaller font size for smaller screens */
+    font-size: 2.5em;
     font-weight: 400;
     color: #00ffcc;
     margin-bottom: 20px;
@@ -18,21 +18,21 @@
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-
 .suggestions-list {
     list-style: none;
     padding: 0;
     margin: 0;
     width: 100%;
-    max-width: 600px; /* More flexible max-width */
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     gap: 15px;
     align-items: center;
 }
 
-.suggestion-item {
-    background-color: #ffffff;
+/* Start animation 1 */
+/* .suggestion-item {
+    background-color: #00ffcc;
     border-radius: 10px;
     padding: 15px;
     width: 100%;
@@ -40,22 +40,171 @@
     justify-content: center;
     align-items: center;
     font-size: 1.2em;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     color: #040404;
+    font-weight: bold;
     cursor: pointer;
     box-shadow: 0px 8px 15px rgba(0, 255, 204, 0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
-.try-again-button {
-    margin-top: 30px;
-    padding: 10px 20px;
-    font-size: 1.2em;
+.suggestion-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: #00ffcc;
-    color: #040404;
-    border: none;
+    transform: scaleX(0);
+    transform-origin: left;
+    z-index: -1;
+    transition: transform 0.6s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fillLeftToRight {
+    0% {
+        transform: scaleX(0);
+    }
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+.suggestions-list .suggestion-item:nth-child(1) {
+    animation: fillLeftToRight 0.6s ease forwards;
+}
+
+.suggestions-list .suggestion-item:nth-child(2) {
+    animation: fillLeftToRight 0.6s ease 0.2s forwards;
+}
+
+.suggestions-list .suggestion-item:nth-child(3) {
+    animation: fillLeftToRight 0.6s ease 0.4s forwards;
+} */
+ /* End animation 1 */
+
+ /* Start animation 2 */
+ .suggestion-item {
+    background-color: #00ffcc;
     border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    color: #040404;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0px 8px 15px rgba(0, 255, 204, 0.4);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    transform: scale(0.9);
+    animation: scaleFadeIn 0.6s ease forwards;
+}
+
+@keyframes loadingBarFill {
+    0% {
+        transform: scaleX(0);
+    }
+    50% {
+        transform: scaleX(0.5);
+    }
+    100% {
+        transform: scaleX(1);
+    }
+}
+@keyframes scaleFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+@keyframes slideUp {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.suggestions-list .suggestion-item:nth-child(1) {
+    animation: scaleFadeIn 0.6s ease forwards;
+}
+
+.suggestions-list .suggestion-item:nth-child(2) {
+    animation: scaleFadeIn 0.6s ease 0.2s forwards;
+}
+
+.suggestions-list .suggestion-item:nth-child(3) {
+    animation: scaleFadeIn 0.6s ease 0.4s forwards;
+}
+
+/* .suggestions-list .suggestion-item:nth-child(1) {
+    animation: loadingBarFill 1s linear 0.6s forwards;
+} */
+/* .suggestions-list .suggestion-item:nth-child(1) {
+    animation: scaleFadeIn 0.6s ease forwards;
+}
+.suggestions-list .suggestion-item:nth-child(2) {
+    animation: bounceIn 0.6s ease 0.2s forwards;
+}
+.suggestions-list .suggestion-item:nth-child(3) {
+    animation: slideUp 0.6s ease 0.4s forwards;
+} */
+
+
+
+.try-again-button {
+    padding: 10px 20px;
+    font-size: 1.5em;
+    background-color: #00ffcc; /* Vibrant button color */
+    color: #040404; /* Dark text for contrast */
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
     box-shadow: 0px 5px 15px rgba(0, 255, 204, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease;
+    font-family: 'Helvetica Neue', sans-serif;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.try-again-button:hover {
+    background-color: #00ffcc; /* Aqua blue */
+    transform: scale(1.05); /* Slightly enlarge button */
+    box-shadow: 0px 0px 15px rgba(0, 255, 204, 0.6); /* Glow effect */
+    font-weight: bold;
+}
+
+.try-again-button:active {
+    background-color: #00ffcc; /* Aqua blue */
+    transform: scale(0.98); /* Button slightly shrinks */
 }
