@@ -194,6 +194,7 @@
     transition: transform 0.3s ease;
     font-family: 'Helvetica Neue', sans-serif;
     justify-content: center;
+    margin-top: 20px;
 }
 
 .try-again-button:hover {
