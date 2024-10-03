@@ -8,6 +8,7 @@ const apiUrl = process.env.REACT_APP_API_GATEWAY_URL;
 const Selector = () => {
     const [buttonNames, setButtonNames] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
+    const [remainingSets, setRemainingSets] = useState(3); // Initialize remaining sets
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,6 +36,10 @@ const Selector = () => {
         try {
             await axios.post(`${apiUrl}`, { id: buttonName });
             setSelectedItems([...selectedItems, buttonName]);
+
+            // Decrement remaining sets but ensure it doesn't go below 0
+            setRemainingSets(prev => (prev > 0 ? prev - 1 : 0));
+
             fetchButtonNames();
         } catch (error) {
             console.error('Error making POST request:', error);
@@ -60,7 +65,11 @@ const Selector = () => {
         <div className="selector-container">
             <div className="instructions">
                 <h1>Pick your favorites</h1>
-                <p>Select at least three items</p>
+                <p>
+                    {remainingSets > 0
+                        ? `Select an option from at least ${remainingSets} more ${remainingSets === 1 ? 'set' : 'sets'}`
+                        : "Select another option for better results"}
+                </p>
             </div>
             <div className="buttons-container">
                 {buttonNames.length > 0 ? (
@@ -70,7 +79,7 @@ const Selector = () => {
                         </button>
                     ))
                 ) : (
-                    <p>Loading options...</p>
+                    <p>Retrieving options...</p>
                 )}
             </div>
             <div className="actions-container">

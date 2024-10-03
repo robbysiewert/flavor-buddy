@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import './SuggestionsPage.css'; // Import your custom CSS
+import './SuggestionsPage.css';
 
 const SuggestionsPage = () => {
     const { state } = useLocation();
@@ -23,7 +23,7 @@ const SuggestionsPage = () => {
                 {sortedSuggestions.map(([_, food], index) => (
                     <li
                         key={index}
-                        className={`suggestion-item ${index === 0 ? 'top-suggestion' : ''}`}
+                        className={`suggestion-item`}
                     >
                         {food}
                     </li>
