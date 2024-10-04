@@ -32,7 +32,7 @@
     flex: 1;
     display: flex;
     padding: 1px;
-    /* animation: scaleFadeIn 0.6s ease forwards; */
+    animation: scaleFadeIn 0.6s ease forwards;
     /* animation: pulse 0.6s ease forwards; */
 
     /* animation: pulse 1.5s infinite; */
@@ -46,7 +46,6 @@
 }
 .button-wrapper button {
     flex: 1;
-    /* Other button styles remain the same */
 }
 
 /* Media query for mobile devices */
@@ -121,6 +120,8 @@
 @media (hover: none) {
     .buttons-container button::before {
         transform: scaleX(0) !important; /* Ensure no background fill on touch devices */
+        font-weight: normal !important;
+        box-shadow: none !important;
     }
 }
 
@@ -274,4 +275,12 @@
 .actions-container button:active {
     background-color: #00ffcc; /* Aqua blue */
     transform: scale(0.98); /* Button slightly shrinks */
+}
+
+@media (hover: none) {
+    .actions-container button::before {
+        transform: scale(1) !important;
+        box-shadow: none !important;
+        font-weight: normal !important;
+    }
 }
