@@ -1,6 +1,6 @@
 .suggestions-container {
     padding: 20px;
-    max-width: 90%;
+    max-width: 80%;
     margin: 50px auto;
     text-align: center;
     display: flex;
@@ -154,17 +154,31 @@
         opacity: 1;
     }
 }
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(0, 255, 204, 0.7);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px rgba(0, 255, 204, 1);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(0, 255, 204, 0.7);
+    }
+}
 
 .suggestions-list .suggestion-item:nth-child(1) {
-    animation: scaleFadeIn 0.6s ease forwards;
+    animation: scaleFadeIn 1.5s ease forwards, pulse 1.5s infinite;
 }
 
 .suggestions-list .suggestion-item:nth-child(2) {
-    animation: scaleFadeIn 0.6s ease 0.2s forwards;
+    animation: scaleFadeIn 1.5s ease 1.5s forwards, pulse 1.5s infinite;
 }
 
 .suggestions-list .suggestion-item:nth-child(3) {
-    animation: scaleFadeIn 0.6s ease 0.4s forwards;
+    animation: scaleFadeIn 1.5s ease 3.0s forwards, pulse 1.5s infinite;
 }
 
 /* .suggestions-list .suggestion-item:nth-child(1) {

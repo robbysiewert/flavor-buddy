@@ -9,6 +9,7 @@ const Selector = () => {
     const [buttonNames, setButtonNames] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [remainingSets, setRemainingSets] = useState(3); // Initialize remaining sets
+    const [buttonKey, setButtonKey] = useState(0); // Key to reset buttons
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,6 +28,7 @@ const Selector = () => {
             console.log('Response data:', response.data);
             const { random_item1, random_item2, random_item3 } = response.data;
             setButtonNames([random_item1, random_item2, random_item3]);
+            setButtonKey(prevKey => prevKey + 1); // Update key to trigger animation
         } catch (error) {
             console.error('Error fetching button names:', error);
         }
@@ -72,16 +74,18 @@ const Selector = () => {
                 </p>
             </div>
             <div className="buttons-container">
-                {buttonNames.length > 0 ? (
-                    buttonNames.map((name, index) => (
-                        <button key={index} onClick={() => handleButtonClick(name)}>
+            {buttonNames.length > 0 ? (
+                buttonNames.map((name, index) => (
+                    <div key={`${buttonKey}-${index}`} className="button-wrapper">
+                        <button onClick={() => handleButtonClick(name)}>
                             {name}
                         </button>
-                    ))
-                ) : (
-                    <p>Retrieving options...</p>
-                )}
-            </div>
+                    </div>
+                ))
+            ) : (
+                <p>Retrieving options...</p>
+            )}
+        </div>
             <div className="actions-container">
                 <button onClick={fetchButtonNames}>
                     Skip
