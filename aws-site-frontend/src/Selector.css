@@ -32,7 +32,17 @@
     flex: 1;
     display: flex;
     padding: 1px;
-    animation: scaleFadeIn 0.6s ease forwards;
+    /* animation: scaleFadeIn 0.6s ease forwards; */
+    /* animation: pulse 0.6s ease forwards; */
+
+    /* animation: pulse 1.5s infinite; */
+    /* animation: fadeInUp 0.6s ease forwards; */
+    /* animation: fillLeftToRight 0.6s ease forwards; */
+    /* animation: bounceIn 0.6s ease 0.2s forwards; */
+    /* animation: slideUp 0.6s ease 0.4s forwards; */
+    /* animation: swing 0.6s; */
+    /* animation: shake 0.5s; */
+    /* animation: rotateIn 0.6s ease forwards; */
 }
 .button-wrapper button {
     flex: 1;
@@ -69,7 +79,6 @@
     box-shadow: 0px 5px 15px rgba(0, 255, 204, 0.3);
     font-family: 'Helvetica Neue', sans-serif;
     width: 100%;
-    /* animation: scaleFadeIn 0.6s ease forwards; */
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transition for hover and active states */
 }
 
@@ -131,21 +140,6 @@
         transform: scale(1); /* Final scale */
     }
 }
-
-
-/* .buttons-container button { */
-    /* animation: scaleFadeIn 0.6s ease forwards; */
-    /* animation: pulse 0.6s ease forwards; */
-
-    /* animation: pulse 1.5s infinite; */
-    /* animation: fadeInUp 0.6s ease forwards; */
-    /* animation: fillLeftToRight 0.6s ease forwards; */
-    /* animation: bounceIn 0.6s ease 0.2s forwards; */
-    /* animation: slideUp 0.6s ease 0.4s forwards; */
-    /* animation: shake 0.5s; */
-    /* animation: rotateIn 0.6s ease forwards; */
-    /* animation: swing 0.6s; */
-/* } */
 
 @keyframes fillLeftToRight {
     0% {
