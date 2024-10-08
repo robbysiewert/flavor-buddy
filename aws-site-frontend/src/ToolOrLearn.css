@@ -9,33 +9,37 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    transition: clip-path 0.2s ease;
+    transition: clip-path 0.5s ease-in-out; /* Match the slower divider movement */
     padding: 20px;
     box-sizing: border-box;
 }
 
-.left-content {
+.info-content {
     background-color: #040404; /* Dark background for left panel */
     z-index: 1;
     color: #00ffcc; /* Light text for contrast */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+}
+.info-content h1 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 10px; /* Optional: add padding for spacing */
 }
 
-.right-content {
-    background-color: #039c78; /* Dark background for right panel */
+.project-content {
+    background-color: #00ffcc; /* Dark background for right panel */
     color: #040404; /* White text for contrast */
     z-index: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
 }
 
-.right-content h1 {
-    color: #ffffff;
+.project-content h1 {
+    color: #040404;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 10px; /* Optional: add padding for spacing */
 }
 
 .divider {
@@ -43,35 +47,32 @@
     top: 0;
     bottom: 0;
     width: 4px;
-    background-color: #00ffcc; /* Divider in a contrasting color */
-    transition: left 0.2s ease;
+    background-color: #00ffcc;
+    transition: left 0.5s ease-in-out;
     z-index: 3;
+}
+
+
+.right-button {
+    position: absolute;
+    right: 20px;
+    top: 50%;
 }
 
 .left-button {
     position: absolute;
-    right: 20px;
-    transform: translateY(-50%);
+    left: 20px;
     top: 50%;
-    background-color: #00ffcc;
-    color: #040404;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
+    background-color: #040404;
+    color: #00ffcc;
+}
+.left-button:hover {
+    background-color: #040404; /* Aqua blue */
+    box-shadow: 0px 0px 15px #040404; /* Glow effect */
+    font-weight: bold;
+}
+.left-button:active {
+    background-color: #ffffff; /* Aqua blue */
 }
 
-.right-button {
-    position: absolute;
-    left: 20px;
-    transform: translateY(-50%);
-    top: 50%;
-    background-color: #00ffcc;
-    color: #040404;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-}
+
