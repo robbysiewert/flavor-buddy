@@ -1,15 +1,3 @@
-/* WelcomePage.css */
-
-/*
-Frontend inspiration:
-https://rly.serious.business/
-The RLY website features a minimalist, dark-themed design with bright accents, a dynamic scrolling interface,
-and interactive elements like parallax effects and sliding content panels. It utilizes clean, sans-serif fonts
-and large, bold headings, which create a modern and tech-savvy atmosphere. Key sections are separated with
-high-contrast text and image transitions, creating a structured and visually engaging experience.
-*/
-/* WelcomePage.css */
-
 /* Dark theme for the entire page */
 @keyframes triangleAnimation {
     0% { background-position: 50% 50%; }
