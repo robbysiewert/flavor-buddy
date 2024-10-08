@@ -14,8 +14,8 @@ const SplitAboutContact = () => {
             const windowWidth = window.innerWidth;
 
             // Define the boundaries for the outer 25% on each side
-            const leftBoundary = windowWidth * 0.25;
-            const rightBoundary = windowWidth * 0.75;
+            const leftBoundary = windowWidth * 0.35;
+            const rightBoundary = windowWidth * 0.65;
 
             if (mouseX < leftBoundary) {
                 // Invert cursor when in the left 25%
@@ -42,7 +42,7 @@ const SplitAboutContact = () => {
             <div className="content project-content" style={{ clipPath: `inset(0 ${window.innerWidth - cursorX}px 0 0)` }}>
                 <h1>Projects</h1>
                 <button
-                    className="continue-button left-button"
+                    className="continue-button project-button"
                     onClick={() => navigate('/welcome-flavor')}
                 >
                     Flavor Buddy
@@ -51,7 +51,7 @@ const SplitAboutContact = () => {
             <div className="content info-content" style={{ clipPath: `inset(0 0 0 ${cursorX}px)` }}>
                 <h1>Robert Siewert</h1>
                 <button
-                    className="continue-button right-button"
+                    className="continue-button info-button"
                     onClick={() => navigate('/about')}
                 >
                     Info

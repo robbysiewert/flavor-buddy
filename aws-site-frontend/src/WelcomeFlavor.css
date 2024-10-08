@@ -12,7 +12,7 @@ body {
     padding: 0;
     height: 100vh;
     font-family: 'Helvetica Neue', sans-serif; /* Clean sans-serif font */
-    background: linear-gradient(45deg, #039c78, #040404, #039c78);
+    background: linear-gradient(45deg, #00ffcc, #040404, #00ffcc);
     background-size: 350% 400%;
     animation: triangleAnimation 20s ease infinite;
 }

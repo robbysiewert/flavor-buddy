@@ -46,32 +46,36 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 4px;
-    background-color: #00ffcc;
+    width: 1px;
+    background-color: rgba(0, 255, 204, 0.6);
     transition: left 0.5s ease-in-out;
     z-index: 3;
+    box-shadow:
+        0 0 30px 10px rgba(0, 255, 204, 0.6), /* Soft glow on the left */
+        0 0 60px 20px rgba(4, 4, 4, 0.8);   /* Dark shadow on the right */
 }
 
 
-.right-button {
+
+.info-button {
     position: absolute;
-    right: 20px;
-    top: 50%;
+    right: 0;
+    top: 10%;
 }
 
-.left-button {
+.project-button {
     position: absolute;
-    left: 20px;
-    top: 50%;
+    left: 0;
+    top: 10%;
     background-color: #040404;
     color: #00ffcc;
 }
-.left-button:hover {
+.project-button:hover {
     background-color: #040404; /* Aqua blue */
     box-shadow: 0px 0px 15px #040404; /* Glow effect */
     font-weight: bold;
 }
-.left-button:active {
+.project-button:active {
     background-color: #ffffff; /* Aqua blue */
 }
 
