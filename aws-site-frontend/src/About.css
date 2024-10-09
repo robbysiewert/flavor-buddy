@@ -35,6 +35,16 @@
     margin-top: 100px;
 }
 
+.aboutme-content a {
+    color: #00ffcc; /* Change this to your desired color */
+    text-decoration: none; /* Optional: removes the underline */
+}
+
+.aboutme-content a:hover {
+    /* color: #ffcc00; */
+    text-decoration: underline;
+}
+
 .info p {
     margin: 10px;
     overflow: auto;
