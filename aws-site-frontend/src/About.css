@@ -50,9 +50,9 @@ html {
 
 
 .right-side img {
-    width: 100%;  /* Make the images fill the container */
+    width: 80%;  /* Make the images fill the container */
     height: auto;
-    max-width: 500px;  /* Set max width for the images */
+    max-width: 250px;  /* Set max width for the images */
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }

@@ -6,10 +6,8 @@ import AboutMe from './AboutMe';
 
 const About = () => {
     return (
-        <div className="about-content">
-        <div className="content info-content">
+        <div className="about-content content info-content">
         <AboutMe />
-        </div>
         <Images />
         </div>
     );
