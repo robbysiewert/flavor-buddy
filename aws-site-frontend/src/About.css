@@ -7,7 +7,7 @@ html, body {
     color: #00ffcc; /* Set text color */
 }
 
-.content {
+.about-content {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -28,6 +28,13 @@ html, body {
     min-height: 100vh; /* Ensure the left side takes full height */
 }
 
+.info p {
+    overflow: auto;
+}
+.info h2 {
+    padding: 20px;
+}
+
 .right-side {
     width: 50%;
     display: flex;
@@ -44,16 +51,4 @@ html, body {
     max-width: 400px;  /* Set max width for the images */
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-
-
-
-h1 {
-    padding: 20px;
-}
-
-/* Ensure the content flows and does not overflow the container */
-p {
-    overflow: auto;
 }
