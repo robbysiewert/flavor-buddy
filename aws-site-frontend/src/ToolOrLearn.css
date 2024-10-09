@@ -5,6 +5,19 @@
     background: #039c78; /* Background color */
 }
 
+.divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: rgba(0, 255, 204, 0.6);
+    transition: left 0.5s ease-in-out;
+    z-index: 3;
+    box-shadow:
+        0 0 30px 10px rgba(0, 255, 204, 0.6), /* Soft glow on the left */
+        0 0 60px 20px rgba(4, 4, 4, 0.8);   /* Dark shadow on the right */
+}
+
 .content {
     position: absolute;
     width: 100%;
@@ -26,6 +39,16 @@
     margin: 0;
     padding: 10px; /* Optional: add padding for spacing */
 }
+.info-button {
+    position: absolute;
+    right: 0;
+    top: 10%;
+}
+.contact-button {
+    position: absolute;
+    right: 0;
+    top: 25%; /* Adjust to position below the Info button */
+}
 
 .project-content {
     background-color: #00ffcc; /* Dark background for right panel */
@@ -40,27 +63,6 @@
     left: 0;
     margin: 0;
     padding: 10px; /* Optional: add padding for spacing */
-}
-
-.divider {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background-color: rgba(0, 255, 204, 0.6);
-    transition: left 0.5s ease-in-out;
-    z-index: 3;
-    box-shadow:
-        0 0 30px 10px rgba(0, 255, 204, 0.6), /* Soft glow on the left */
-        0 0 60px 20px rgba(4, 4, 4, 0.8);   /* Dark shadow on the right */
-}
-
-
-
-.info-button {
-    position: absolute;
-    right: 0;
-    top: 10%;
 }
 
 .project-button {

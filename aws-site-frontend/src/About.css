@@ -1,3 +1,59 @@
+/* Ensure the entire page has the dark background */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;  /* Ensure the body takes full height */
+    background-color: #040404;  /* Set the dark background */
+    color: #00ffcc; /* Set text color */
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 100vh;  /* Ensures the container takes the full height of the viewport */
+    flex-direction: row;
+    flex-wrap: wrap;
+    background-color: #040404; /* Dark background */
+}
+
+.info {
+    color: #00ffcc;
+    font-size: .8em;
+    padding: 20px;
+    text-align: left;
+    width: 50%;
+    box-sizing: border-box;
+    min-height: 100vh; /* Ensure the left side takes full height */
+}
+
+.right-side {
+    width: 50%;
+    display: flex;
+    flex-direction: column;  /* Stack images vertically */
+    align-items: center;     /* Center the images horizontally */
+    gap: 20px;               /* Space between images */
+    padding-top: 100px;       /* Adjust this value as needed */
+}
+
+
+.right-side img {
+    width: 100%;  /* Make the images fill the container */
+    height: auto;
+    max-width: 400px;  /* Set max width for the images */
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
 h1 {
     padding: 20px;
+}
+
+/* Ensure the content flows and does not overflow the container */
+p {
+    overflow: auto;
 }

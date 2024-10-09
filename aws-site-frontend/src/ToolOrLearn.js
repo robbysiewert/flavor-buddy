@@ -40,7 +40,7 @@ const SplitAboutContact = () => {
     return (
         <div className="split-screen">
             <div className="content project-content" style={{ clipPath: `inset(0 ${window.innerWidth - cursorX}px 0 0)` }}>
-                <h1>Projects</h1>
+                <h1>Portfolio</h1>
                 <button
                     className="continue-button project-button"
                     onClick={() => navigate('/welcome-flavor')}
