@@ -1,8 +1,8 @@
 /* Ensure the entire page has the dark background */
-html {
-    height: 100%;  /* Ensure the body takes full height */
+/* html {
+    height: 100%;
     background-color: #040404;
-}
+} */
 
 .about-content {
     display: flex;
@@ -12,8 +12,14 @@ html {
     min-height: 100vh;  /* Ensures the container takes the full height of the viewport */
     flex-direction: row;
     flex-wrap: wrap;
-    background-color: #040404; /* Dark background */
 }
+
+.black-background {
+    background-image: none;
+    background-color: #040404;
+}
+
+
 
 .info {
     color: #00ffcc;
@@ -26,7 +32,7 @@ html {
 }
 
 .aboutme-content {
-    margin-top: 70px;
+    margin-top: 100px;
 }
 
 .info p {

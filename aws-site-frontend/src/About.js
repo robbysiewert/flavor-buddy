@@ -6,7 +6,7 @@ import AboutMe from './AboutMe';
 
 const About = () => {
     return (
-        <div className="about-content content info-content">
+        <div className="about-content info-content">
         <AboutMe />
         <Images />
         </div>
