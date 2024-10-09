@@ -49,6 +49,30 @@ const SplitAboutContact = () => {
                 >
                     Flavor Buddy
                 </button>
+                <div class="gear-container">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 100 100"
+                        class="gear"
+                    >
+                        <circle cx="50" cy="50" r="45" fill="#111" />
+                    </svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 100 100"
+                        class="gear"
+                    >
+                        <circle cx="50" cy="50" r="45" fill="#222" />
+                    </svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 100 100"
+                        class="gear"
+                    >
+                        <circle cx="50" cy="50" r="45" fill="#333" />
+                    </svg>
+                </div>
+
             </div>
 
             <div className="content info-content" style={{ clipPath: `inset(0 0 0 ${cursorX}px)` }}>

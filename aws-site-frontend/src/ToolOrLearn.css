@@ -97,3 +97,27 @@
 }
 
 
+.gear-container {
+    position: fixed;  /* Keeps the gear fixed in place even when scrolling */
+    top: 50%;         /* Vertically centers the gear on the page */
+    right: 10%;       /* Positions the gear 25% away from the right edge */
+    transform: translateY(-50%);  /* Centers it vertically by adjusting for height */
+  }
+
+  .gear {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 10px solid #333;
+    border-top: 10px solid #00ffcc;
+    animation: spin 4s infinite linear;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
