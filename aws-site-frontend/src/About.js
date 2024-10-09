@@ -1,11 +1,14 @@
 import React from 'react';
 import './About.css';
+import './ToolOrLearn.css';
+import Images from './Images';
+import AboutMe from './AboutMe';
 
 const About = () => {
     return (
-        <div>
-            <h1>About Page</h1>
-            <p>This page is currently under construction. Check back later for more information!</p>
+        <div className="about-content info-content">
+        <AboutMe />
+        <Images />
         </div>
     );
 };
