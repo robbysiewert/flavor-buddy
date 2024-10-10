@@ -42,37 +42,43 @@ const SplitAboutContact = () => {
     return (
         <div className="split-screen">
             <div className="content project-content" style={{ clipPath: `inset(0 ${window.innerWidth - cursorX}px 0 0)` }}>
-                <h1>Portfolio</h1>
+                <h1 className='project-content-header'>Portfolio</h1>
                 <button
                     className="continue-button project-button"
                     onClick={() => navigate('/welcome-flavor')}
                 >
                     Flavor Buddy
                 </button>
+                <div className='project-descrip-container'>
+                <p>Flavor buddy is a user analytics / product recommendation tool. Find out what meal to order tonight.</p>
+                </div>
+
+                {/*
                 <div class="gear-container">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 100 100"
-                        class="gear"
-                    >
-                        <circle cx="50" cy="50" r="45" fill="#111" />
-                    </svg>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 100 100"
-                        class="gear"
-                    >
-                        <circle cx="50" cy="50" r="45" fill="#222" />
-                    </svg>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 100 100"
-                        class="gear"
+                        class="gear cw"
                     >
                         <circle cx="50" cy="50" r="45" fill="#333" />
                     </svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 100 100"
+                        class="gear ccw"
+                    >
+                        <circle cx="50" cy="50" r="45" fill="#333" />
+                    </svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 100 100"
+                        class="gear cw"
+                    >
+                        <circle cx="50" cy="50" r="45" fill="#333" />
+                    </svg>
+                    <p>This content is under construction.</p>
                 </div>
-
+                */}
             </div>
 
             <div className="content info-content" style={{ clipPath: `inset(0 0 0 ${cursorX}px)` }}>

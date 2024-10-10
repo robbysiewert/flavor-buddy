@@ -79,6 +79,16 @@
     margin: 0;
     padding: 10px 30px;
 }
+.project-content p {
+    color: #040404;
+    position: absolute;
+    padding: 10px 10px;
+    top: 10%;
+    right: 10%;
+    width: 35%;
+    text-align: left;
+    /* font-size: .9em; */
+}
 
 .project-button {
     position: absolute;
@@ -112,6 +122,12 @@
     border-top: 10px solid #00ffcc;
     animation: spin 4s infinite linear;
   }
+  .cw {
+    animation: spin 4s infinite linear;
+  }
+  .ccw {
+    animation: spin-ccw 4s infinite linear;
+  }
 
   @keyframes spin {
     0% {
@@ -119,5 +135,13 @@
     }
     100% {
       transform: rotate(360deg);
+    }
+  }
+  @keyframes spin-ccw {
+    0% {
+      transform: rotate(360deg);
+    }
+    100% {
+      transform: rotate(0deg);
     }
   }
