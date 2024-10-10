@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = () => {
     const [scrollingDown, setScrollingDown] = useState(false);
-    let lastScrollY = 0;
+    const lastScrollY = useRef(0); // Use useRef to persist the value across renders
 
     const handleScroll = useCallback(() => {
-        if (window.scrollY > lastScrollY) {
+        if (window.scrollY > lastScrollY.current) {
             setScrollingDown(true);
         } else {
             setScrollingDown(false);
         }
-        lastScrollY = window.scrollY;
+        lastScrollY.current = window.scrollY; // Update the value using the ref
     }, []);  // The empty array ensures this is only created once
 
     useEffect(() => {

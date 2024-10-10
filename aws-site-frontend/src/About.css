@@ -73,4 +73,31 @@
     /* max-height: 325px; */
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;              /* Initially hide the images */
+    transform: translateX(100%); /* Initially position the images off-screen */
+    transition: transform 1s ease-out, opacity 1s ease-out; /* Smooth animation */
+}
+
+/* Keyframes for the slide-in effect */
+@keyframes slideInRight {
+    to {
+        transform: translateX(0); /* Move to the original position */
+        opacity: 1;  /* Make the image visible */
+    }
+}
+
+/* Add class to trigger animation */
+.right-side img.in-view {
+    animation: slideInRight 1s forwards; /* Trigger animation */
+}
+
+/* Optional: If you want to stagger the animations */
+.right-side img:nth-child(1) {
+    animation-delay: 0s;
+}
+.right-side img:nth-child(2) {
+    animation-delay: 0.3s;
+}
+.right-side img:nth-child(3) {
+    animation-delay: 0.6s;
 }
