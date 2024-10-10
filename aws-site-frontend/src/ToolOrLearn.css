@@ -1,153 +1,196 @@
 .split-screen {
     position: relative;
     width: 100vw;
-    height: 100vh;
-    background: #039c78; /* Background color */
+    min-height: 100vh;
+    /* height: 100vh; */
+    display: flex;
+    align-items: stretch; /* Ensures both columns are the same height */
+    /* background: #00ffcc; */
 }
 
 .divider {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background-color: rgba(0, 255, 204, 0.6);
-    transition: left 0.5s ease-in-out;
-    z-index: 3;
-    box-shadow:
-        0 0 30px 10px rgba(0, 255, 204, 0.6), /* Soft glow on the left */
-        0 0 60px 20px rgba(4, 4, 4, 0.8);   /* Dark shadow on the right */
+  position: fixed; /* Changed from absolute to fixed */
+  height: 100%; /* Ensures the divider covers the entire viewport height */  top: 0;
+  bottom: 0;
+  width: 0;
+  background-color: rgba(0, 255, 204, 0.6);
+  transition: left 0.5s ease-in-out;
+  z-index: 3;
+  box-shadow:
+      0 0 30px 10px rgba(0, 255, 204, 0.6), /* Soft glow on the left */
+      0 0 60px 20px rgba(4, 4, 4, 0.8);   /* Dark shadow on the right */
 }
 
 .content {
     position: absolute;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     transition: clip-path 0.5s ease-in-out; /* Match the slower divider movement */
     padding: 20px;
     box-sizing: border-box;
 }
 
-.info-content {
-    background-color: #040404; /* Dark background for left panel */
-    z-index: 1;
-    color: #00ffcc; /* Light text for contrast */
+/* .no-overflow {
+    max-height: 100vh;
+    overflow: hidden;
+} */
+
+.project-content {
+  background-color: #00ffcc; /* Dark background for right panel */
+  color: #040404; /* White text for contrast */
+  z-index: 2;
 }
 
-.no-overflow {
-    max-height: 100vh; /* Ensure this panel stays within viewport height */
-    overflow: hidden;  /* Prevent content from overflowing */
+.info-content {
+  background-color: #040404; /* Dark background for left panel */
+  color: #00ffcc; /* Light text for contrast */
+  z-index: 1;
+}
+.project-content,
+.info-content {
+    flex: 1; /* Both take up equal width */
+    /* padding: 20px; */
+    box-sizing: border-box; /* Ensures padding doesn't affect the width/height */
 }
 
 .info-content h1 {
     position: absolute;
     margin: 0;
     padding: 10px 30px; /* Optional: add padding for spacing */
-}
-
-.about-header-placement h1 {
-    left: 0;
-    top: 40px;
-}
-
-.name-placement h1 {
     right: 0;
     top: 0;
-}
-/* .about-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 10px;
-} */
-.info-button {
-    position: absolute;
-    right: 0;
-    top: 10%;
-}
-.contact-button {
-    position: absolute;
-    right: 0;
-    top: 25%; /* Adjust to position below the Info button */
-}
-
-.project-content {
-    background-color: #00ffcc; /* Dark background for right panel */
-    color: #040404; /* White text for contrast */
-    z-index: 2;
 }
 
 .project-content h1 {
-    color: #040404;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 10px 30px;
+  position: absolute;
+  margin: 0;
+  padding: 10px 30px;
+  top: 0;
+  left: 0;
+  color: #040404;
 }
+
 .project-content p {
-    color: #040404;
-    position: absolute;
-    padding: 10px 10px;
-    top: 10%;
-    right: 10%;
-    width: 35%;
-    text-align: left;
-    /* font-size: .9em; */
+  color: #040404;
+  position: absolute;
+  padding: 10px 10px;
+  top: 10%;
+  right: 10%;
+  width: 35%;
+  text-align: left;
+  font-weight: bold;
+  /* font-size: .9em; */
 }
 
 .project-button {
-    position: absolute;
-    left: 0;
-    top: 10%;
-    background-color: #040404;
-    color: #00ffcc;
+  position: absolute;
+  left: 0;
+  top: 7%;
+  background-color: #040404;
+  color: #00ffcc;
 }
 .project-button:hover {
-    background-color: #040404; /* Aqua blue */
-    box-shadow: 0px 0px 15px #040404; /* Glow effect */
-    font-weight: bold;
+  background-color: #040404; /* Aqua blue */
+  box-shadow: 0px 0px 15px #040404; /* Glow effect */
+  font-weight: bold;
 }
 .project-button:active {
-    background-color: #ffffff; /* Aqua blue */
+  background-color: #ffffff; /* Aqua blue */
+}
+
+.info-button {
+  position: absolute;
+  right: 0;
+  top: 7%;
 }
 
 
+
+.about-header-placement h1 {
+  left: 0;
+  top: 40px;
+}
+
+
+/* @media (max-width: 768px) {
+  .split-screen {
+      flex-direction: column;
+  }
+
+  .divider {
+      display: none;
+  }
+} */
+
+/*
+.contact-button {
+  position: absolute;
+  right: 0;
+  top: 25%;
+}
+
 .gear-container {
-    position: fixed;  /* Keeps the gear fixed in place even when scrolling */
-    top: 50%;         /* Vertically centers the gear on the page */
-    right: 10%;       /* Positions the gear 25% away from the right edge */
-    transform: translateY(-50%);  /* Centers it vertically by adjusting for height */
-  }
+  position: fixed;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+}
 
-  .gear {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 10px solid #333;
-    border-top: 10px solid #00ffcc;
-    animation: spin 4s infinite linear;
-  }
-  .cw {
-    animation: spin 4s infinite linear;
-  }
-  .ccw {
-    animation: spin-ccw 4s infinite linear;
-  }
+.gear {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 10px solid #333;
+  border-top: 10px solid #00ffcc;
+  animation: spin 4s infinite linear;
+}
+.cw {
+  animation: spin 4s infinite linear;
+}
+.ccw {
+  animation: spin-ccw 4s infinite linear;
+}
 
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  @keyframes spin-ccw {
-    0% {
-      transform: rotate(360deg);
-    }
-    100% {
-      transform: rotate(0deg);
-    }
+  100% {
+    transform: rotate(360deg);
   }
+}
+@keyframes spin-ccw {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/*
+<div class="gear-container">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        class="gear cw"
+    >
+        <circle cx="50" cy="50" r="45" fill="#333" />
+    </svg>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        class="gear ccw"
+    >
+        <circle cx="50" cy="50" r="45" fill="#333" />
+    </svg>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        class="gear cw"
+    >
+        <circle cx="50" cy="50" r="45" fill="#333" />
+    </svg>
+    <p>This content is under construction.</p>
+</div>
+*/
