@@ -31,6 +31,8 @@
     background-color: #040404; /* Dark background for left panel */
     z-index: 1;
     color: #00ffcc; /* Light text for contrast */
+    max-height: 100vh; /* Ensure this panel stays within viewport height */
+    overflow: hidden;  /* Prevent content from overflowing */
 }
 .info-content h1 {
     position: absolute;

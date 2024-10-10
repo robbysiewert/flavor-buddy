@@ -33,6 +33,9 @@
 
 .aboutme-content {
     margin-top: 100px;
+    max-height: 100vh; /* Limit the height to the viewport height */
+    overflow-y: hidden; /* Prevent scrolling */
+    text-overflow: ellipsis; /* Truncate the text */
 }
 
 .aboutme-content a {

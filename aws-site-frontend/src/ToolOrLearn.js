@@ -49,9 +49,7 @@ const SplitAboutContact = () => {
                 >
                     Flavor Buddy
                 </button>
-                <div className='project-descrip-container'>
                 <p>Flavor buddy is a user analytics / product recommendation tool. Find out what meal to order tonight.</p>
-                </div>
 
                 {/*
                 <div class="gear-container">
@@ -89,7 +87,7 @@ const SplitAboutContact = () => {
                     className="continue-button info-button"
                     onClick={() => navigate('/about')}
                 >
-                    Info
+                    About
                 </button>
                 <AboutMe />
             </div>
