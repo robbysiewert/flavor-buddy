@@ -49,33 +49,37 @@ const SplitAboutContact = () => {
                 >
                     Flavor Buddy
                 </button>
+                <p>Flavor buddy is a user analytics / product recommendation tool. Find out what meal to order tonight.</p>
+
+                {/*
                 <div class="gear-container">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 100 100"
-                        class="gear"
-                    >
-                        <circle cx="50" cy="50" r="45" fill="#111" />
-                    </svg>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 100 100"
-                        class="gear"
-                    >
-                        <circle cx="50" cy="50" r="45" fill="#222" />
-                    </svg>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 100 100"
-                        class="gear"
+                        class="gear cw"
                     >
                         <circle cx="50" cy="50" r="45" fill="#333" />
                     </svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 100 100"
+                        class="gear ccw"
+                    >
+                        <circle cx="50" cy="50" r="45" fill="#333" />
+                    </svg>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 100 100"
+                        class="gear cw"
+                    >
+                        <circle cx="50" cy="50" r="45" fill="#333" />
+                    </svg>
+                    <p>This content is under construction.</p>
                 </div>
-
+                */}
             </div>
 
-            <div className="content info-content" style={{ clipPath: `inset(0 0 0 ${cursorX}px)` }}>
+            <div className="content info-content no-overflow" style={{ clipPath: `inset(0 0 0 ${cursorX}px)` }}>
             <div className='name-placement'>
             <h1>Robert Siewert</h1>
             </div>
@@ -83,7 +87,7 @@ const SplitAboutContact = () => {
                     className="continue-button info-button"
                     onClick={() => navigate('/about')}
                 >
-                    Info
+                    About
                 </button>
                 <AboutMe />
             </div>

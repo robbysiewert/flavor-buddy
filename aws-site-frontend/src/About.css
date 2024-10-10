@@ -61,14 +61,16 @@
     flex-direction: column;  /* Stack images vertically */
     align-items: center;     /* Center the images horizontally */
     gap: 20px;               /* Space between images */
-    padding-top: 100px;       /* Adjust this value as needed */
+    padding-top: 10%;       /* Adjust this value as needed */
+    padding-bottom: 5%;
 }
 
 
 .right-side img {
-    width: 80%;  /* Make the images fill the container */
+    width: 100%;  /* Make the images fill the container */
     height: auto;
-    max-width: 250px;  /* Set max width for the images */
+    max-width: 325px;
+    /* max-height: 325px; */
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
