@@ -8,9 +8,9 @@ import demoImage from './assets/demo.png';
 const Images = () => {
     return (
         <div className="right-side">
-        <img src={presentingImage} alt="Robot 1" />
+        <img src={presentingImage} alt="Robert Presenting" />
         <img src={auditoriumImage} alt="Auditorium" />
-        <img src={demoImage} alt="Presenting the Robot" />
+        <img src={demoImage} alt="Robot Demo" />
         </div>
     );
 };
