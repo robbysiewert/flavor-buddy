@@ -79,7 +79,7 @@ const SplitAboutContact = () => {
                 */}
             </div>
 
-            <div className="content info-content" style={{ clipPath: `inset(0 0 0 ${cursorX}px)` }}>
+            <div className="content info-content no-overflow" style={{ clipPath: `inset(0 0 0 ${cursorX}px)` }}>
             <div className='name-placement'>
             <h1>Robert Siewert</h1>
             </div>
