@@ -88,7 +88,7 @@ const Selector = () => {
         </div>
             <div className="actions-container">
                 <button onClick={fetchButtonNames}>
-                    Skip
+                    Randomize
                 </button>
                 {selectedItems.length >= 3 && (
                     <button onClick={handleFinishClick}>
